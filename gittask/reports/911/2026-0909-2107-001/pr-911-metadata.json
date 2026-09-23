@@ -1,0 +1,28 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABC1EHnA",
+  "number": 911,
+  "title": "Move the agent input caret between visual rows",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/911",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/agent-input-multiline-cursor-publish",
+  "headRefOid": "ee4bf99c366333f2b88d339c0bbf4f87efcabc04",
+  "baseRefName": "main",
+  "baseRefOid": "1d0f05252e8910771fb393195ad5ab8ce6a4c34a",
+  "commitCount": 3,
+  "commits": [
+    {
+      "oid": "acd292ffe03fa48b6eedc449e6910ac09c3df6dd",
+      "messageHeadline": "Move agent input caret between rendered rows"
+    },
+    {
+      "oid": "dd8d6cb903ded30e3bfe33fa1cbc2853644c58b0",
+      "messageHeadline": "Allocate navigation checklist IDs after upstream integration"
+    },
+    {
+      "oid": "ee4bf99c366333f2b88d339c0bbf4f87efcabc04",
+      "messageHeadline": "Separate newline escapes in navigation test data"
+    }
+  ]
+}
+

@@ -1,0 +1,20 @@
+PR: 923
+Worktree: C:\ado\gittask\code\intelligent-terminal-923
+Local branch: 923
+
+Pre-sync:
+- Head: ed2535dcff40ac069b23fe25c0671c5f1f435476
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/923/head inside the PR worktree.
+- Fast-forwarded to 20a34569753ae34a1cfdff2dc082b78eb01c96be.
+- New commits:
+  - ade90e638b52977faabb1df10ea032c63813fcb6 Clarify source anchored validation for input editing tests
+  - 20a34569753ae34a1cfdff2dc082b78eb01c96be Avoid undo owner snapshots for animation ticks
+
+Post-sync:
+- Head: 20a34569753ae34a1cfdff2dc082b78eb01c96be
+- PR worktree clean: yes
+

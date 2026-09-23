@@ -1,0 +1,68 @@
+[
+  {
+    "threadId": "PRRT_kwDOSgzUZs6cWit2",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103416",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "isResolved": true,
+    "resolvedBy": "DinahK-2SO",
+    "commentCount": 2,
+    "lastCommentAuthor": "DinahK-2SO",
+    "lastCommentUrl": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3922724288",
+    "lastCommentBody": "Fixed in `5e13925ac`. `config_channel` now includes the `Select` kind in capability lookup, so a same-ID/category non-Select entry cannot shadow a later valid selector. The deterministic `config_discovery_skips_non_select_duplicate_before_valid_selector` regression covers the ordering."
+  },
+  {
+    "threadId": "PRRT_kwDOSgzUZs6cWiuM",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103457",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "isResolved": true,
+    "resolvedBy": "DinahK-2SO",
+    "commentCount": 2,
+    "lastCommentAuthor": "DinahK-2SO",
+    "lastCommentUrl": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3922728232",
+    "lastCommentBody": "Fixed in `5e13925ac`. Copilot now requires its exact advertised `on`/`off` value set before the selector is accepted as a reversible native Yolo capability. Claude and Codex still preserve their valid captured-current restore semantics. `copilot_selector_requires_advertised_off_value` covers the missing-`off` shape."
+  },
+  {
+    "threadId": "PRRT_kwDOSgzUZs6cv3OC",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054038",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "isResolved": true,
+    "resolvedBy": "DinahK-2SO",
+    "commentCount": 2,
+    "lastCommentAuthor": "DinahK-2SO",
+    "lastCommentUrl": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3922725531",
+    "lastCommentBody": "Fixed in `5e13925ac`. `config_channel` now includes the `Select` kind in capability lookup, so a same-ID/category non-Select entry cannot shadow a later valid selector. The deterministic `config_discovery_skips_non_select_duplicate_before_valid_selector` regression covers the ordering."
+  },
+  {
+    "threadId": "PRRT_kwDOSgzUZs6cv3Oo",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054092",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "isResolved": true,
+    "resolvedBy": "DinahK-2SO",
+    "commentCount": 2,
+    "lastCommentAuthor": "DinahK-2SO",
+    "lastCommentUrl": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3922729808",
+    "lastCommentBody": "Fixed in `5e13925ac`. Copilot now requires its exact advertised `on`/`off` value set before the selector is accepted as a reversible native Yolo capability. Claude and Codex still preserve their valid captured-current restore semantics. `copilot_selector_requires_advertised_off_value` covers the missing-`off` shape."
+  },
+  {
+    "threadId": "PRRT_kwDOSgzUZs6d81jS",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3900298165",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "isResolved": true,
+    "resolvedBy": "DinahK-2SO",
+    "commentCount": 2,
+    "lastCommentAuthor": "DinahK-2SO",
+    "lastCommentUrl": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3922726852",
+    "lastCommentBody": "Fixed in `5e13925ac`. `config_channel` now includes the `Select` kind in capability lookup, so a same-ID/category non-Select entry cannot shadow a later valid selector. The deterministic `config_discovery_skips_non_select_duplicate_before_valid_selector` regression covers the ordering."
+  },
+  {
+    "threadId": "PRRT_kwDOSgzUZs6ezQu3",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3921727168",
+    "path": "tools/wta/src/app_contracts/yolo.rs",
+    "isResolved": true,
+    "resolvedBy": "DinahK-2SO",
+    "commentCount": 2,
+    "lastCommentAuthor": "DinahK-2SO",
+    "lastCommentUrl": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3922731198",
+    "lastCommentBody": "Fixed in `5e13925ac`. Copilot #4537 prompt safety now uses the exact session's acknowledged native state, not only the global default. Manual `/config allow_all=off` blocks affected versions even when the global default is on; acknowledged on remains usable, Missing/Unsupported remains interactive, and the state is rechecked at the final ACP send boundary. The fix also fences pending/superseded operations and reused session generations."
+  }
+]

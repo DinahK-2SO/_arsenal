@@ -1,0 +1,20 @@
+PR: 890
+Worktree: C:\ado\gittask\code\intelligent-terminal-890
+Local branch: 890
+
+Pre-sync:
+- Head: 55ab0340b5396e505ed888df4d9ae8e1a87e848a
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/890/head inside the PR worktree.
+- Fast-forwarded to 69727d8f0b52943529bac3fd770910321edae8a7.
+- New commits:
+  - 325dc9f27b227b5e9a011f36f264ceacccda3066 Disarm pane closure after every handled input copy
+  - 69727d8f0b52943529bac3fd770910321edae8a7 Pin and restore the Select All test window keyboard layout
+
+Post-sync:
+- Head: 69727d8f0b52943529bac3fd770910321edae8a7
+- PR worktree clean: yes
+

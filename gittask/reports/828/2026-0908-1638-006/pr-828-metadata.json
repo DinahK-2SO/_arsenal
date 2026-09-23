@@ -1,0 +1,21 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCHDOvA",
+  "number": 828,
+  "title": "Scope automatic approval and hide unavailable states",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/828",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/yolo-mode-next-publish",
+  "headRefOid": "8acaab0e6157383862965dde08b7507d58df32d9",
+  "baseRefName": "main",
+  "baseRefOid": "feafd89dabd133e26735c61c3bd97573c7c270fa",
+  "commitCount": 13,
+  "newPrCommits": [
+    "7ff7972d91db26b825966f7ca00f2b43b9d7a595",
+    "d8ffd1450b1dfccd65dea383d08b1068bfae9ec7",
+    "6a42d894b7d357b0f3c7b9c7ab6b0b5bd307c436",
+    "309db5a422f59e9ceaea77ab4e42cb28dd33bacb",
+    "8acaab0e6157383862965dde08b7507d58df32d9"
+  ]
+}
+

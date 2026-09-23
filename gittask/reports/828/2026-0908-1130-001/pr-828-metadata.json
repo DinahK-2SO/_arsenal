@@ -1,0 +1,48 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCHDOvA",
+  "number": 828,
+  "title": "Scope Yolo mode to the default agent provider",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/828",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/yolo-mode-next-publish",
+  "headRefOid": "12536255734f950e89aff2d138b3df2ad9cb29e6",
+  "baseRefName": "main",
+  "baseRefOid": "b361d91b25dda4b455a7f58ca04909c90f56bae3",
+  "commitCount": 8,
+  "commits": [
+    {
+      "oid": "2cbe7179b83afc25db4158af08ff072d6770fa56",
+      "messageHeadline": "Scope Yolo to default agent provider"
+    },
+    {
+      "oid": "1453262cebc6090124b65696e969b46a3a98edfc",
+      "messageHeadline": "Strengthen scoped Yolo package coverage"
+    },
+    {
+      "oid": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+      "messageHeadline": "Address Yolo review findings"
+    },
+    {
+      "oid": "28ef341e03c8a6215cd745cb9d1f5cd10dcfbc86",
+      "messageHeadline": "Make Yolo locale selftest dynamic"
+    },
+    {
+      "oid": "a6ea43153fa4d8719a42ce1f2f7f4891e1bb9adb",
+      "messageHeadline": "Disable Yolo when the default agent is blocked"
+    },
+    {
+      "oid": "1e736f6a94478144671cebb048452c4c627275fe",
+      "messageHeadline": "Normalize policy-blocked Yolo before settings save"
+    },
+    {
+      "oid": "b9d07e00215c8f0d9fb075f8b8de5e2654b901f1",
+      "messageHeadline": "Keep agent identity authoritative during rebind"
+    },
+    {
+      "oid": "12536255734f950e89aff2d138b3df2ad9cb29e6",
+      "messageHeadline": "Clarify per-tab Yolo runtime updates"
+    }
+  ]
+}
+

@@ -1,0 +1,12 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6fE1BE",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+    "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+    "decision": "won't fix",
+    "reply": null,
+    "existingReply": "Intentional compatibility boundary, so I am not changing this branch. This PR scopes default-following and explicit `/agent` paths; profile backend, saved-layout restore, historical resume, and other non-`/agent` override owners are explicitly out of scope to avoid changing existing behavior. `TestDefaultProviderYoloInheritance` locks the `(false, false)` case, while `doc/specs/Yolo-mode.md` defines runtime provider selection for `/agent`. Leaving this thread open for maintainer review.",
+    "evidence": "PR head, thread content, reply count, and reviewed behavior are unchanged. The author explicitly keeps this compatibility boundary out of scope and requests maintainer review."
+  }
+]

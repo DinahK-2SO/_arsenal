@@ -1,0 +1,24 @@
+PR: 828
+Worktree: C:\ado\gittask\code\intelligent-terminal-828
+Local branch: 828
+
+Pre-sync:
+- Head: 12536255734f950e89aff2d138b3df2ad9cb29e6
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/828/head inside the PR worktree.
+- Fast-forwarded to 8acaab0e6157383862965dde08b7507d58df32d9.
+- The update incorporated 34 reachable commits, including latest-main merges.
+- New PR commits after the previous head:
+  - 7ff7972d91db26b825966f7ca00f2b43b9d7a595 Merge latest main into paused Yolo publish
+  - d8ffd1450b1dfccd65dea383d08b1068bfae9ec7 Merge latest Agents styling into paused Yolo publish
+  - 6a42d894b7d357b0f3c7b9c7ab6b0b5bd307c436 Hide unavailable automatic approval settings
+  - 309db5a422f59e9ceaea77ab4e42cb28dd33bacb Dismiss FRE dropdown before approval checks
+  - 8acaab0e6157383862965dde08b7507d58df32d9 Use Escape to dismiss the FRE dropdown
+
+Post-sync:
+- Head: 8acaab0e6157383862965dde08b7507d58df32d9
+- PR worktree clean: yes
+

@@ -1,0 +1,18 @@
+PR: 923
+Worktree: C:\ado\gittask\code\intelligent-terminal-923
+Local branch: 923
+
+Pre-sync:
+- Head: 85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/923/head inside the PR worktree.
+- Fast-forwarded to ed2535dcff40ac069b23fe25c0671c5f1f435476.
+- New commit: ed2535dcff40ac069b23fe25c0671c5f1f435476 Preserve undo groups across asynchronous input ownership
+
+Post-sync:
+- Head: ed2535dcff40ac069b23fe25c0671c5f1f435476
+- PR worktree clean: yes
+

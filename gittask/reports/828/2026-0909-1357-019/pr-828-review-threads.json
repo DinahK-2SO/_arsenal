@@ -1,0 +1,21 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "4fd6d671b1908447319df8dea5d7b24a7ad50a50",
+  "totalThreads": 28,
+  "resolvedThreads": 28,
+  "unresolvedThreads": 0,
+  "processed": [
+    {
+      "id": "PRRT_kwDOSgzUZs6ghFl4",
+      "commentUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3964990866",
+      "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+      "originalCommit": "7d08e0f080a7c54e8a6c3d33e8d03019d65f6484",
+      "fixCommit": "4fd6d671b1908447319df8dea5d7b24a7ad50a50",
+      "decision": "resolved",
+      "replyUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3965115105",
+      "reply": "Fixed in 4fd6d671b1908447319df8dea5d7b24a7ad50a50, status handling now checks whether `agent_id` is present and updates `AgentCurrentId` even when its value is empty, clearing stale per-tab provider identity while preserving compatibility when the member is omitted.",
+      "isResolved": true
+    }
+  ]
+}
+

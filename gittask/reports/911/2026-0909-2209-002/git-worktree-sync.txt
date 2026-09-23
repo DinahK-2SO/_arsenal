@@ -1,0 +1,21 @@
+PR: 911
+Worktree: C:\ado\gittask\code\intelligent-terminal-911
+Local branch: 911
+
+Pre-sync:
+- Head: ee4bf99c366333f2b88d339c0bbf4f87efcabc04
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/911/head inside the PR worktree.
+- Fast-forwarded to 41ad533d7f41ebc15ef878a9e92a31f527f83aeb.
+- New commits:
+  - a5166d0db0e512c28900c6fccc5afaccbc03d19a Preserve arrow boundaries and await event subscriptions
+  - 7d05dc20976362c9cfd9e8d595ccc1bee7213759 Describe all event listener return fields
+  - 41ad533d7f41ebc15ef878a9e92a31f527f83aeb Reset vertical intent for non-input key consumers
+
+Post-sync:
+- Head: 41ad533d7f41ebc15ef878a9e92a31f527f83aeb
+- PR worktree clean: yes
+

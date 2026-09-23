@@ -1,0 +1,31 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "94ae7318e292bf6a52565ad8f2abb59f2a0c4646",
+  "totalThreads": 21,
+  "resolvedThreads": 19,
+  "unresolvedThreads": 2,
+  "unresolved": [
+    {
+      "id": "PRRT_kwDOSgzUZs6fE1BE",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+      "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+      "originalCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+      "isOutdated": true,
+      "decision": "won't fix",
+      "reply": null,
+      "reason": "The refactor moved this behavior into AgentYoloPolicy::AutomaticScope::LegacyGlobalPreference but intentionally preserves the same compatibility boundary. TestDefaultProviderYoloInheritance still locks the false/false case as enabled."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gdBuQ",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3963363127",
+      "path": "src/cascadia/TerminalApp/FreOverlay.cpp",
+      "line": 199,
+      "originalCommit": "94ae7318e292bf6a52565ad8f2abb59f2a0c4646",
+      "isOutdated": false,
+      "decision": "active",
+      "reply": null,
+      "reason": "Selecting an unavailable provider sets AutomaticApprovalToggle off. Switching back only re-enables and reveals the toggle, so the prior unsaved choice is not restored. No later commit exists."
+    }
+  ]
+}
+

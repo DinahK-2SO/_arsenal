@@ -1,0 +1,32 @@
+{
+  "pullRequest": 890,
+  "conversationComments": [
+    {
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#issuecomment-5578365042",
+      "author": "github-actions",
+      "createdAt": "2026-09-08T02:50:31Z",
+      "summary": "Check-spelling report listing draftx and Xone; ordinary conversation comment, not a resolvable review thread."
+    }
+  ],
+  "reviews": [
+    {
+      "id": "PRR_kwDOSgzUZs8AAAABMi1P-g",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#pullrequestreview-5136797690",
+      "state": "COMMENTED",
+      "author": "copilot-pull-request-reviewer",
+      "submittedAt": "2026-09-08T02:49:24Z",
+      "commitOid": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "commentsGenerated": 1
+    },
+    {
+      "id": "PRR_kwDOSgzUZs8AAAABMi1faA",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#pullrequestreview-5136801640",
+      "state": "COMMENTED",
+      "author": "github-advanced-security",
+      "submittedAt": "2026-09-08T02:50:02Z",
+      "commitOid": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "commentsGenerated": 4
+    }
+  ]
+}
+

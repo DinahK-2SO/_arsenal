@@ -1,0 +1,18 @@
+PR: 828
+Worktree: C:\ado\gittask\code\intelligent-terminal-828
+Local branch: 828
+
+Initial state:
+- Main repository clean: yes
+- Local branch 828 existed at 12536255734f950e89aff2d138b3df2ad9cb29e6.
+- PR worktree did not exist.
+
+Sync:
+- Fetched refs/pull/828/head.
+- The local branch already matched the fetched PR head.
+- Created C:\ado\gittask\code\intelligent-terminal-828.
+
+Final state:
+- Head: 12536255734f950e89aff2d138b3df2ad9cb29e6
+- PR worktree clean: yes
+

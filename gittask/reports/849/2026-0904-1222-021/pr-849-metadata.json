@@ -1,0 +1,68 @@
+{
+  "author": {
+    "id": "U_kgDOBvTrEw",
+    "is_bot": false,
+    "login": "DinahK-2SO",
+    "name": "Dinah Xiaoman G"
+  },
+  "baseRefName": "main",
+  "body": "## Summary of the Pull Request\n\nBounds the GitHub Copilot ACP permission compatibility block to CLI versions 1.0.81-1 through 1.0.83-3. Version 1.0.83-4 and later now use the normal Yolo-off prompt path, while affected and unparseable versions remain fail closed.\n\n## References and Relevant Issues\n\ngithub/copilot-cli#4537\n\n## Detailed Description of the Pull Request / Additional comments\n\nDirect ACP denied-permission probes identified 1.0.83-4 as the first safe release.\n\n## Validation Steps Performed\n\nAdded boundary and prompt-dispatch regressions. Focused tests pass. Full explicit-target WTA: 2,009 passed, 0 failed, 1 ignored. Pinned official Copilot binaries showed 1.0.83-3 executing without a permission request and 1.0.83-4 requesting permission; cancelled requests produced no file side effect.\n\n## PR Checklist\n- [ ] Closes #xxx\n- [x] Tests added/passed\n- [ ] Documentation updated\n   - If checked, please file a pull request on [our docs repo](https://github.com/MicrosoftDocs/terminal) and link it here: #xxx\n- [ ] Schema updated (if necessary)",
+  "commits": [
+    {
+      "authoredDate": "2026-09-04T10:41:45Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-04T10:41:45Z",
+      "messageBody": "Allow Copilot CLI 1.0.83-4 and later to use the standard prompt path while retaining the existing guard for affected and unknown versions.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Bound Copilot Yolo-off compatibility range",
+      "oid": "75bc6324b99cf24fcaba5b81ec77ae12cfb3706d"
+    },
+    {
+      "authoredDate": "2026-09-04T10:53:10Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-04T10:53:10Z",
+      "messageBody": "Recommend stable and prerelease fixed versions without suggesting a downgrade.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Clarify Copilot upgrade guidance",
+      "oid": "d0365fb81ab5f3de0db804ca1f1be5cf3b3d7230"
+    }
+  ],
+  "createdAt": "2026-09-04T10:42:41Z",
+  "headRefName": "user/DinahK-2SO/copilot-acp-yolo-off-publish",
+  "headRefOid": "d0365fb81ab5f3de0db804ca1f1be5cf3b3d7230",
+  "headRepositoryOwner": {
+    "id": "U_kgDOBvTrEw",
+    "name": "Dinah Xiaoman G",
+    "login": "DinahK-2SO"
+  },
+  "isDraft": false,
+  "number": 849,
+  "state": "OPEN",
+  "title": "Bound Copilot Yolo-off compatibility range",
+  "updatedAt": "2026-09-04T11:22:02Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/849"
+}

@@ -1,0 +1,3 @@
+From github.com:microsoft/intelligent-terminal
+ * branch                dev/vanzue/yolo-mode -> FETCH_HEAD
+Already up to date.

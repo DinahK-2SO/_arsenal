@@ -1,0 +1,13 @@
+{
+  "pullRequest": 891,
+  "conversationCommentCount": 1,
+  "reviewCount": 8,
+  "activeReviewThreadCount": 0,
+  "latestReview": {
+    "state": "APPROVED",
+    "author": "vanzue",
+    "submittedAt": "2026-09-08T07:09:33Z",
+    "commitOid": "43c68b91cd6fe7df178f0ebb8deeb49a8978a603"
+  }
+}
+

@@ -1,0 +1,20 @@
+PR: 923
+Worktree: C:\ado\gittask\code\intelligent-terminal-923
+Local branch: 923
+
+Pre-sync:
+- Head: 20a34569753ae34a1cfdff2dc082b78eb01c96be
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/923/head inside the PR worktree.
+- Fast-forwarded to 45af75c57ce86e5fe122acae37c85cf389d6c143.
+- New commits:
+  - 2eeff0afe1c8955dde764e4fd7a4c45d0fbabd2a Observe active undo ownership without per-event allocation
+  - 45af75c57ce86e5fe122acae37c85cf389d6c143 Cover real clipboard image undo and restored ACP payloads
+
+Post-sync:
+- Head: 45af75c57ce86e5fe122acae37c85cf389d6c143
+- PR worktree clean: yes
+

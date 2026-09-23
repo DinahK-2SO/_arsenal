@@ -1,0 +1,92 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6cWit2",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103416",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Current head still searches by id/category before checking Select kind, so an incompatible first match can hide a later valid selector."
+  },
+  {
+    "index": 2,
+    "threadId": "PRRT_kwDOSgzUZs6cWiuM",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103457",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Current Copilot config discovery still accepts the current advertised value as the restore value without requiring the documented off value."
+  },
+  {
+    "index": 3,
+    "threadId": "PRRT_kwDOSgzUZs6cWiuY",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103472",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "resolved",
+    "reply": "Fixed in 7c8a682224b1a0750834c76b77783bfd30133788, provider-native ACP modes replaced fallback approval, and the PR title and description now document supported providers while keeping unsupported providers interactive.",
+    "evidence": "The current PR title and description explicitly document provider-native modes for Copilot, Claude, Codex, and Gemini, with unsupported OpenCode behavior remaining interactive."
+  },
+  {
+    "index": 4,
+    "threadId": "PRRT_kwDOSgzUZs6cv3OC",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054038",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Current head still checks Select kind only after taking the first id/category match."
+  },
+  {
+    "index": 5,
+    "threadId": "PRRT_kwDOSgzUZs6cv3Oo",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054092",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Current head still does not require Copilot's configured off restore value to be present before accepting the privileged selector."
+  },
+  {
+    "index": 6,
+    "threadId": "PRRT_kwDOSgzUZs6cwyof",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870421333",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "resolved",
+    "reply": "Fixed in 7c8a682224b1a0750834c76b77783bfd30133788, provider-native ACP modes replaced fallback approval, and the PR title and description now document supported providers while keeping unsupported providers interactive.",
+    "evidence": "The current PR title and description now match the provider-native-only implementation and no longer promise request_permission fallback approval."
+  },
+  {
+    "index": 7,
+    "threadId": "PRRT_kwDOSgzUZs6d81jS",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3900298165",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At current head, capability discovery can still stop on a non-Select id/category match before a later valid Select entry."
+  },
+  {
+    "index": 8,
+    "threadId": "PRRT_kwDOSgzUZs6enBsA",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3916838072",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "resolved",
+    "reply": "Fixed in 4176a7d4bcc9aad8c38e38905dd80edece311259, missing or mismatched acknowledgments now require a provider restart for both enable and disable operations, preventing prompts from resuming with unknown privileged state.",
+    "evidence": "The commit makes every missing requested-value acknowledgment restart-required and adds enable-path regression coverage."
+  },
+  {
+    "index": 9,
+    "threadId": "PRRT_kwDOSgzUZs6enBtI",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3916838168",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "resolved",
+    "reply": "Fixed in 4176a7d4bcc9aad8c38e38905dd80edece311259, enable reconciliation now verifies the returned option is the requested reversible configuration; missing capabilities, mismatched values, or absent restore values require a restart.",
+    "evidence": "The commit verifies enabled state remains an Available reversible ConfigOption and adds missing-option and unrestorable-enable tests."
+  },
+  {
+    "index": 10,
+    "threadId": "PRRT_kwDOSgzUZs6en6L1",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3917185580",
+    "path": "tools/wta/src/protocol/acp/client.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Current send-time policy enforcement still calls privileged_agent_command only when prompt.is_agent_command() is true, leaving the asynchronous classification gap described by the reviewer."
+  }
+]

@@ -1,0 +1,9 @@
+Checkout:
+Already on branch 849
+
+Fetch:
+From github.com:microsoft/intelligent-terminal
+ * branch                refs/pull/849/head -> FETCH_HEAD
+
+Fast-forward:
+Already up to date.

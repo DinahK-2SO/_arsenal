@@ -1,0 +1,31 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "fee5c71a7d0ff570f8266a7c0d100bc86e12c39c",
+  "totalThreads": 27,
+  "resolvedThreads": 26,
+  "unresolvedThreads": 1,
+  "processed": [
+    {
+      "id": "PRRT_kwDOSgzUZs6fE1BE",
+      "commentUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+      "originalCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+      "fixCommit": "2deb69174d59653bc9de3841253306aacb355795",
+      "decision": "resolved",
+      "replyUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3964806118",
+      "reply": "Fixed in 2deb69174d59653bc9de3841253306aacb355795, automatic Yolo requests now always require the running provider to match the Settings default; the legacy global-preference scope and its true fallback were removed, with tests updated to reject non-default providers.",
+      "isResolved": true
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6ggfuX",
+      "commentUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3964756410",
+      "path": "tools/wta/src/wt_protocol_events.rs",
+      "line": 21,
+      "originalCommit": "fee5c71a7d0ff570f8266a7c0d100bc86e12c39c",
+      "decision": "active",
+      "reply": null,
+      "reason": "Test-mode send appends to a thread-local Vec without a cap or automatic boundary clear. take_test_published_events drains only when explicitly called, so unrelated tests on a reused worker thread can accumulate or observe prior events. No later fix commit exists.",
+      "isResolved": false
+    }
+  ]
+}
+

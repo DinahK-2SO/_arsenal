@@ -1,0 +1,30 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6fE1BE",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+    "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+    "decision": "won't fix",
+    "reply": null,
+    "existingReply": "Intentional compatibility boundary, so I am not changing this branch. This PR scopes default-following and explicit `/agent` paths; profile backend, saved-layout restore, historical resume, and other non-`/agent` override owners are explicitly out of scope to avoid changing existing behavior. `TestDefaultProviderYoloInheritance` locks the `(false, false)` case, while `doc/specs/Yolo-mode.md` defines runtime provider selection for `/agent`. Leaving this thread open for maintainer review.",
+    "evidence": "The author explicitly rejected changing this compatibility boundary and requested that the unresolved thread remain open for maintainer review."
+  },
+  {
+    "index": 2,
+    "threadId": "PRRT_kwDOSgzUZs6fE1Bp",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605692",
+    "path": "test/e2e/selftests/ItE2E.Unit.Tests.ps1",
+    "decision": "resolved",
+    "reply": "Fixed in 28ef341e03c8a6215cd745cb9d1f5cd10dcfbc86, replaced the fixed locale count with the dynamically discovered resource-directory count while retaining consistency and semantic assertions.",
+    "evidence": "Commit 28ef341e stores the discovered locale directories and compares comments.Count against localeDirectories.Count instead of the fixed value 16."
+  },
+  {
+    "index": 3,
+    "threadId": "PRRT_kwDOSgzUZs6fFC0v",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928690886",
+    "path": "src/cascadia/TerminalSettingsModel/GlobalAppSettings.cpp",
+    "decision": "resolved",
+    "reply": "Fixed in a6ea43153fa4d8719a42ce1f2f7f4891e1bb9adb, EffectiveAgentPaneYoloMode and Settings enablement now use the policy-filtered effective agent and force Yolo off when no eligible default provider remains.",
+    "evidence": "Commit a6ea4315 switches both EffectiveAgentPaneYoloMode and Settings enablement to EffectiveAcpAgent and returns false when that effective identity is empty."
+  }
+]

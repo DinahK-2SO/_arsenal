@@ -1,0 +1,26 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "94ae7318e292bf6a52565ad8f2abb59f2a0c4646",
+  "totalThreads": 21,
+  "resolvedThreads": 19,
+  "unresolvedThreads": 2,
+  "unresolved": [
+    {
+      "id": "PRRT_kwDOSgzUZs6fE1BE",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+      "isOutdated": true,
+      "decision": "won't fix",
+      "reply": null,
+      "reason": "AgentYoloPolicy explicitly documents LegacyGlobalPreference as preserving existing behavior for binding owners that have not adopted default-provider scope. TestDefaultProviderYoloInheritance locks the false/false case as enabled."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gdBuQ",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3963363127",
+      "isOutdated": false,
+      "decision": "active",
+      "reply": null,
+      "reason": "The FRE still forces the toggle off for an unavailable provider without restoring the prior unsaved value when a supported provider is reselected. No later fix commit exists."
+    }
+  ]
+}
+

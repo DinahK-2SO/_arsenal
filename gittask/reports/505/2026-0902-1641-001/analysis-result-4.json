@@ -1,0 +1,210 @@
+[
+  {
+    "group": 4,
+    "decision": "resolved",
+    "fixCommit": "7c8a682224b1a0750834c76b77783bfd30133788",
+    "explanation": "centralized per-session cleanup and called it from /new, drop_tab_session, and reset_tab_session_for, removing both the Yolo override and pending change before session IDs can be reused.",
+    "evidence": "The commit adds clear_yolo_session_state (remove_session plus pending_yolo_changes.remove) and invokes it in both teardown paths; the PR head retains equivalent cleanup.",
+    "confidence": "high"
+  },
+  {
+    "group": 8,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the German and every other non-English WTA locale catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/de-DE.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 12,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in every non-English WTA locale catalog and corrected the locked-token annotations, eliminating the copied English summary.",
+    "evidence": "The commit changes commands.yolo.summary across all non-English locale files; its stat covers the full catalog set and the reviewed English values are replaced.",
+    "confidence": "high"
+  },
+  {
+    "group": 16,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "expanded the persistence E2E to relaunch Terminal, open a new agent session, and assert an initial native Yolo enabled update from the persisted default.",
+    "evidence": "The revised test waits for the new ACP session and requires Test-YoloNativeUpdate with Enabled true, directly covering default application to a new session.",
+    "confidence": "high"
+  },
+  {
+    "group": 20,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Uzbek catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/uz-Latn-UZ.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 24,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Polish catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/pl-PL.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 28,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Estonian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/et-EE.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 32,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Ukrainian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/uk-UA.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 36,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the French catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/fr-FR.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 40,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Russian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/ru-RU.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 44,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Turkish catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/tr-TR.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 48,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Armenian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/hy-AM.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 52,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Macedonian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/mk-MK.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 56,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Spanish catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/es-ES.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 60,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Quechua catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/quz-PE.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 64,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Serbian Latin catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/sr-Latn-RS.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 68,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Valencian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/ca-Es-VALENCIA.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 72,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Tatar catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/tt-RU.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 76,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Dutch catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/nl-NL.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 80,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Swedish catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/sv-SE.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 84,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Konkani catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/kok-IN.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 88,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Latvian catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/lv-LV.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 92,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Slovak catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/sk-SK.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 96,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "translated commands.yolo.summary in the Serbian Cyrillic catalog, replacing the copied English text while preserving the required technical tokens.",
+    "evidence": "The commit directly replaces the English commands.yolo.summary value in tools/wta/locales/sr-Cyrl-RS.yml; the localized value remains at the PR head.",
+    "confidence": "high"
+  },
+  {
+    "group": 100,
+    "decision": "active",
+    "fixCommit": null,
+    "explanation": null,
+    "evidence": "At 17bc4828231169ede2e67fdfa66f8b5fab8c5b9f, config_channel still finds by id/category before checking Select kind; an incompatible first match returns Missing. There is no later PR commit.",
+    "confidence": "high"
+  },
+  {
+    "group": 104,
+    "decision": "resolved",
+    "fixCommit": "acbd86ef64c199e6788c3ab36f0b1d567cf1dfa8",
+    "explanation": "added a parameterized system.provider_command_blocked_by_policy locale key and routed both policy-rejection AgentError paths through the localized helper.",
+    "evidence": "The commit introduces provider_command_blocked_by_policy using t!(...) and replaces both hard-coded format! messages at the two reported paths.",
+    "confidence": "high"
+  }
+]

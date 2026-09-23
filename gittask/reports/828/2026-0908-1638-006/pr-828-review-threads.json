@@ -1,0 +1,32 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "8acaab0e6157383862965dde08b7507d58df32d9",
+  "totalThreads": 20,
+  "resolvedThreads": 19,
+  "unresolvedThreads": 1,
+  "processed": [
+    {
+      "id": "PRRT_kwDOSgzUZs6gT2K2",
+      "commentUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3959707017",
+      "path": "test/e2e/tests/Feature.FreAgentSetup.Tests.ps1",
+      "originalCommit": "309db5a422f59e9ceaea77ab4e42cb28dd33bacb",
+      "fixCommit": "8acaab0e6157383862965dde08b7507d58df32d9",
+      "decision": "resolved",
+      "replyUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3960174579",
+      "reply": "Fixed in 8acaab0e6157383862965dde08b7507d58df32d9, the FRE test now dismisses the ComboBox with the window-level Escape helper, retains the explicit collapsed-state assertion, and includes a source guard preventing the brittle `Light Dismiss` selector from returning.",
+      "isResolved": true
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6fE1BE",
+      "commentUrl": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+      "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+      "line": 2175,
+      "originalCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+      "decision": "won't fix",
+      "reply": null,
+      "reason": "The author explicitly preserved non-/agent override owners as an intentional compatibility boundary. The latest updates do not alter that documented scope.",
+      "isResolved": false
+    }
+  ]
+}
+

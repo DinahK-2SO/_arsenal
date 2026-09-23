@@ -1,0 +1,32 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCmw5qQ",
+  "number": 891,
+  "title": "Localize automatic approval settings and pending status",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/891",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/yolo-copy-localization-publish",
+  "headRefOid": "f38b881725b6f3e0b570b913cccb09cf65b0a890",
+  "baseRefName": "main",
+  "baseRefOid": "47b3e9234e32b9deff0bf070a16ad7ebb10514fa",
+  "commitCount": 4,
+  "commits": [
+    {
+      "oid": "5c8c71e326693ca17ae0593441a8bce935260c31",
+      "messageHeadline": "Add RED for localized Yolo pending reason"
+    },
+    {
+      "oid": "19f93b68af7d0aa392dfd04d664bbf8635e9c931",
+      "messageHeadline": "Add RED for automatic approval copy"
+    },
+    {
+      "oid": "49dc99b65969f2d7bae8291110e013450f36f72b",
+      "messageHeadline": "Localize automatic approval settings"
+    },
+    {
+      "oid": "f38b881725b6f3e0b570b913cccb09cf65b0a890",
+      "messageHeadline": "Avoid hardcoded German in localization test"
+    }
+  ]
+}
+

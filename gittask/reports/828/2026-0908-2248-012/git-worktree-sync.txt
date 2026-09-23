@@ -1,0 +1,22 @@
+PR: 828
+Worktree: C:\ado\gittask\code\intelligent-terminal-828
+Local branch: 828
+
+Pre-sync:
+- Head: 8acaab0e6157383862965dde08b7507d58df32d9
+- Main repository clean: yes
+- PR worktree clean: yes
+
+First fetch attempt:
+- Failed during the SSH banner exchange with "Software caused connection abort".
+- No repository state changed.
+
+Retry:
+- Retried the same origin fetch without changing accounts or remotes.
+- Fetched refs/pull/828/head successfully.
+- Fast-forward result: Already up to date.
+
+Post-sync:
+- Head: 8acaab0e6157383862965dde08b7507d58df32d9
+- PR worktree clean: yes
+

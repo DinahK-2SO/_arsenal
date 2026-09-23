@@ -1,0 +1,20 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABC_uRxA",
+  "number": 923,
+  "title": "Add grouped undo and redo to Agent Pane drafts",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/923",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/agent-input-undo-redo-publish",
+  "headRefOid": "85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01",
+  "baseRefName": "main",
+  "baseRefOid": "5015f9dcff1f951d1d9a57e911f3633baed0f40d",
+  "commitCount": 1,
+  "commits": [
+    {
+      "oid": "85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01",
+      "messageHeadline": "Add grouped undo and redo for agent input"
+    }
+  ]
+}
+

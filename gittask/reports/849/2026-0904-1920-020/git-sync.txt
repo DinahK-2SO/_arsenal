@@ -1,0 +1,12 @@
+Previous branch: 828 (12536255734f950e89aff2d138b3df2ad9cb29e6)
+Local branch existed: False
+
+Fetch:
+From github.com:microsoft/intelligent-terminal
+ * [new ref]             refs/pull/849/head -> 849
+
+Checkout:
+Switched to branch '849'
+
+Sync:
+Created local branch from PR ref

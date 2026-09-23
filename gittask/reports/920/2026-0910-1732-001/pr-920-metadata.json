@@ -1,0 +1,36 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABC9rQfg",
+  "number": 920,
+  "title": "Rename Yolo policy to Automatic Approval",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/920",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/yolo-verbiage-publish",
+  "headRefOid": "491c9a2a593618db3eeed14d24864a3a15986926",
+  "baseRefName": "main",
+  "baseRefOid": "8982835d337850963d2bccfa81f3cef2b51cc842",
+  "commitCount": 5,
+  "commits": [
+    {
+      "oid": "587a3b7e53c0fad6b56abac8e8eb3f68efbf42ac",
+      "messageHeadline": "Update automatic approval policy wording"
+    },
+    {
+      "oid": "2cb98a0f1f564b31ac367e3ad9224006e054a382",
+      "messageHeadline": "Localize automatic approval policy wording"
+    },
+    {
+      "oid": "f533125ecd0c3e191c67c894dd5e2adedd43fb9b",
+      "messageHeadline": "Guard against legacy Yolo locale wording"
+    },
+    {
+      "oid": "3d6acc8e27881b088733e5aa81d9cb092bd9be83",
+      "messageHeadline": "Merge latest main into Yolo verbiage publication"
+    },
+    {
+      "oid": "491c9a2a593618db3eeed14d24864a3a15986926",
+      "messageHeadline": "Use Automatic approval in policy errors"
+    }
+  ]
+}
+

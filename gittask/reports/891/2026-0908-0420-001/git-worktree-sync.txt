@@ -1,0 +1,15 @@
+PR: 891
+Worktree: C:\ado\gittask\code\intelligent-terminal-891
+Local branch: 891
+
+Initial state:
+- Main repository clean: yes
+- PR worktree did not exist.
+- Local branch 891 did not exist.
+
+Creation:
+- Fetched refs/pull/891/head into local branch 891.
+- Created C:\ado\gittask\code\intelligent-terminal-891.
+- Head: f38b881725b6f3e0b570b913cccb09cf65b0a890
+- PR worktree clean: yes
+

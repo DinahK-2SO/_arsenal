@@ -1,0 +1,35 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCmk1Dg",
+  "number": 890,
+  "title": "Make Ctrl+A select editable agent chat drafts",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/890",
+  "state": "OPEN",
+  "headRefName": "user/DinahK-2SO/agent-input-select-all-publish",
+  "headRefOid": "69727d8f0b52943529bac3fd770910321edae8a7",
+  "baseRefName": "main",
+  "baseRefOid": "47b3e9234e32b9deff0bf070a16ad7ebb10514fa",
+  "commitCount": 5,
+  "commits": [
+    {
+      "oid": "116a0ea9dbe28806bab0b3f3b276e40f3d1fb4a2",
+      "messageHeadline": "Make agent Ctrl+A select editable chat drafts"
+    },
+    {
+      "oid": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "messageHeadline": "Allocate a unique checklist ID after main integration"
+    },
+    {
+      "oid": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+      "messageHeadline": "Clarify selection test markers and cover close-arm reachability"
+    },
+    {
+      "oid": "325dc9f27b227b5e9a011f36f264ceacccda3066",
+      "messageHeadline": "Disarm pane closure after every handled input copy"
+    },
+    {
+      "oid": "69727d8f0b52943529bac3fd770910321edae8a7",
+      "messageHeadline": "Pin and restore the Select All test window keyboard layout"
+    }
+  ]
+}
+

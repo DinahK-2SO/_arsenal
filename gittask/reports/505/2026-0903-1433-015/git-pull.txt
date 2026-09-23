@@ -1,0 +1,19 @@
+From github.com:microsoft/intelligent-terminal
+ * branch                dev/vanzue/yolo-mode -> FETCH_HEAD
+   281d48d82..c41aaafd6  dev/vanzue/yolo-mode -> origin/dev/vanzue/yolo-mode
+Updating 281d48d82..c41aaafd6
+Fast-forward
+ doc/specs/Yolo-mode.md                             |  16 +-
+ tools/wta/src/app.rs                               |  18 +-
+ tools/wta/src/app/autofix.rs                       |  53 ++++
+ tools/wta/src/app_events.rs                        |  12 +-
+ tools/wta/src/app_turn.rs                          |  22 +-
+ tools/wta/src/autofix_tests.rs                     |  90 +++++++
+ tools/wta/src/protocol/acp/client.rs               | 110 ++++++--
+ tools/wta/src/protocol/acp/mock_agent_tests.rs     | 282 +++++++++++++++++++++
+ tools/wta/src/protocol/acp/native_yolo.rs          |  35 ++-
+ .../protocol/acp/native_yolo/providers/copilot.rs  |  46 ++++
+ .../src/protocol/acp/native_yolo/providers/mod.rs  |   4 +
+ tools/wta/src/protocol/acp/native_yolo_tests.rs    |  36 +++
+ tools/wta/src/slash_command_tests.rs               |  30 +++
+ 13 files changed, 721 insertions(+), 33 deletions(-)

@@ -1,0 +1,19 @@
+PR: 828
+Worktree: C:\ado\gittask\code\intelligent-terminal-828
+Local branch: 828
+
+Pre-sync:
+- Head: 8acaab0e6157383862965dde08b7507d58df32d9
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/828/head inside the PR worktree.
+- Fast-forwarded to 94ae7318e292bf6a52565ad8f2abb59f2a0c4646.
+- New commit: 94ae7318e292bf6a52565ad8f2abb59f2a0c4646 Separate manual Yolo permission from automatic selection
+- A final refresh found no additional commits.
+
+Post-sync:
+- Head: 94ae7318e292bf6a52565ad8f2abb59f2a0c4646
+- PR worktree clean: yes
+

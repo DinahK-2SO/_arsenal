@@ -1,0 +1,16 @@
+Checkout:
+Already on branch 828
+
+Fetch:
+From github.com:microsoft/intelligent-terminal
+ * branch                refs/pull/828/head -> FETCH_HEAD
+
+Fast-forward:
+Updating d9071588a..1e736f6a9
+Fast-forward
+ .../TerminalSettingsEditor/AIAgentsViewModel.cpp    |  4 +++-
+ src/cascadia/TerminalSettingsEditor/MainPage.cpp    |  1 +
+ .../TerminalSettingsModel/GlobalAppSettings.cpp     |  4 +++-
+ .../CustomAgentAndPolicyTests.cpp                   | 21 +++++++++++++++++++++
+ test/e2e/selftests/ItE2E.Unit.Tests.ps1             | 19 +++++++++++++++++--
+ 5 files changed, 45 insertions(+), 4 deletions(-)

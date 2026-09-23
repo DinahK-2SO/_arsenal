@@ -1,0 +1,13 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCHDOvA",
+  "number": 828,
+  "title": "Scope Yolo mode to the default agent provider",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/828",
+  "state": "OPEN",
+  "headRefName": "user/DinahK-2SO/yolo-mode-next-publish",
+  "headRefOid": "12536255734f950e89aff2d138b3df2ad9cb29e6",
+  "baseRefName": "main",
+  "baseRefOid": "b361d91b25dda4b455a7f58ca04909c90f56bae3",
+  "commitCount": 8
+}
+

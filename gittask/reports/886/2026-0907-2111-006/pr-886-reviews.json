@@ -1,0 +1,17 @@
+{
+  "pullRequest": 886,
+  "conversationCommentCount": 0,
+  "reviews": [
+    {
+      "id": "PRR_kwDOSgzUZs8AAAABMfs3Hg",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/886#pullrequestreview-5133514526",
+      "state": "COMMENTED",
+      "author": "copilot-pull-request-reviewer",
+      "submittedAt": "2026-09-07T15:17:24Z",
+      "commitOid": "aee3a51263d6ffbee67ad3a6af9c0e094079c1ec",
+      "commentsGenerated": 0,
+      "actionableReviewThread": false
+    }
+  ]
+}
+

@@ -1,0 +1,19 @@
+PR: 891
+Worktree: C:\ado\gittask\code\intelligent-terminal-891
+Local branch: 891
+
+Pre-sync:
+- Head: f38b881725b6f3e0b570b913cccb09cf65b0a890
+- Main repository clean: yes
+- PR worktree clean: yes
+
+Sync:
+- Fetched refs/pull/891/head inside the PR worktree.
+- Fast-forwarded to 43c68b91cd6fe7df178f0ebb8deeb49a8978a603.
+- New PR commit: 43c68b91cd6fe7df178f0ebb8deeb49a8978a603 Merge latest main into localization publish
+- The merge incorporated main commits d5302d1e06112475e2c53dc82df4b2965eb5b399 and 69c1b5f24bd6a72f778e3397af10a702ab09ad0f.
+
+Post-sync:
+- Head: 43c68b91cd6fe7df178f0ebb8deeb49a8978a603
+- PR worktree clean: yes
+

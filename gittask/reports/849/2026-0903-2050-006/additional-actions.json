@@ -1,0 +1,20 @@
+[
+  {
+    "index": 17,
+    "threadId": "PRRT_kwDOSgzUZs6fE1BE",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+    "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+    "decision": "active",
+    "reply": null,
+    "evidence": "_ResolveAutomaticYoloForAgentBinding still returns true when both scopeToDefaultProvider and usesSettingsDefaultProvider are false, allowing other provider overrides to inherit the persisted Yolo preference. The comment is on the current head."
+  },
+  {
+    "index": 18,
+    "threadId": "PRRT_kwDOSgzUZs6fE1Bp",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605692",
+    "path": "test/e2e/selftests/ItE2E.Unit.Tests.ps1",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The current selftest dynamically enumerates resource directories but then hard-codes comments.Count to 16. The comment is on the current head and no later fix exists."
+  }
+]

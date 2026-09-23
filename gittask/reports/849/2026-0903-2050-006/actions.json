@@ -1,0 +1,162 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6fEMne",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928356804",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/de-DE/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 2,
+    "threadId": "PRRT_kwDOSgzUZs6fEMn8",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928356848",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/en-US/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 3,
+    "threadId": "PRRT_kwDOSgzUZs6fEMod",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928356893",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/es-ES/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 4,
+    "threadId": "PRRT_kwDOSgzUZs6fEMpA",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928356939",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/fr-FR/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 5,
+    "threadId": "PRRT_kwDOSgzUZs6fEMpZ",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928356974",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/it-IT/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 6,
+    "threadId": "PRRT_kwDOSgzUZs6fEMp8",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357026",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/ja-JP/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 7,
+    "threadId": "PRRT_kwDOSgzUZs6fEMqS",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357065",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/ko-KR/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 8,
+    "threadId": "PRRT_kwDOSgzUZs6fEMqe",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357096",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/pt-BR/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 9,
+    "threadId": "PRRT_kwDOSgzUZs6fEMq7",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357138",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/qps-ploc/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 10,
+    "threadId": "PRRT_kwDOSgzUZs6fEMrL",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357165",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/qps-ploca/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 11,
+    "threadId": "PRRT_kwDOSgzUZs6fEMrk",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357199",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/qps-plocm/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 12,
+    "threadId": "PRRT_kwDOSgzUZs6fEMsF",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357246",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/ru-RU/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 13,
+    "threadId": "PRRT_kwDOSgzUZs6fEMsW",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357274",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/sr-Cyrl-RS/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 14,
+    "threadId": "PRRT_kwDOSgzUZs6fEMst",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357304",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/uk-UA/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 15,
+    "threadId": "PRRT_kwDOSgzUZs6fEMtC",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357334",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/zh-CN/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  },
+  {
+    "index": 16,
+    "threadId": "PRRT_kwDOSgzUZs6fEMtZ",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928357376",
+    "path": "src/cascadia/TerminalSettingsEditor/Resources/zh-TW/Resources.resw",
+    "decision": "resolved",
+    "fixCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+    "reply": "Fixed in d9071588ac4d1f0d9744c6f7f63c7b544f590a62, updated the OpenCode warning title translator comments across all 16 locale catalogs to describe the Settings-default forced-Off behavior and added a parity regression test.",
+    "evidence": "Commit d9071588 updates AIAgents_YoloOpenCodeWarning.Title translator comments in all 16 locale catalogs and adds a hermetic parity regression test."
+  }
+]

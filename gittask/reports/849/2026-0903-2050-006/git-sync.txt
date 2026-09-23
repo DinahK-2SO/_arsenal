@@ -1,0 +1,8 @@
+Initial remote-branch fetch failed safely: fatal: couldn't find remote ref user/DinahK-2SO/yolo-mode-next-publish
+
+Fallback fetch:
+From github.com:microsoft/intelligent-terminal
+ * [new ref]             refs/pull/828/head -> 828
+
+Checkout:
+Switched to branch '828'

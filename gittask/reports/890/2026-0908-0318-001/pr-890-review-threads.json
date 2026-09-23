@@ -1,0 +1,64 @@
+{
+  "pullRequest": 890,
+  "headRefOid": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+  "totalThreads": 5,
+  "unresolvedThreads": 5,
+  "threads": [
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9LP",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953894851",
+      "author": "copilot-pull-request-reviewer",
+      "path": "tools/wta/src/app_events.rs",
+      "line": 284,
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "decision": "active",
+      "reply": null,
+      "reason": "The current error branch still leaves close_pane_armed_at unchanged, and no later commit exists."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9iV",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897044",
+      "author": "github-advanced-security",
+      "path": "tools/wta/src/app_tests.rs",
+      "line": 11706,
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "decision": "active",
+      "reply": null,
+      "reason": "The unrecognized token draftx remains in the current head, with no spelling metadata change or later commit."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9ir",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897068",
+      "author": "github-advanced-security",
+      "path": "tools/wta/src/app_tests.rs",
+      "line": 11712,
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "decision": "active",
+      "reply": null,
+      "reason": "The unrecognized token Xone remains in the current head, with no spelling metadata change or later commit."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9i3",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897084",
+      "author": "github-advanced-security",
+      "path": "tools/wta/src/app_tests.rs",
+      "line": 11717,
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "decision": "active",
+      "reply": null,
+      "reason": "The unrecognized token Xone remains in the current head, with no spelling metadata change or later commit."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9jA",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897097",
+      "author": "github-advanced-security",
+      "path": "tools/wta/src/app_tests.rs",
+      "line": 11721,
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "decision": "active",
+      "reply": null,
+      "reason": "The unrecognized token Xone remains in the current head, with no spelling metadata change or later commit."
+    }
+  ]
+}
+

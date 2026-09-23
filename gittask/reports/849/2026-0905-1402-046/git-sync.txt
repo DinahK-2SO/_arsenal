@@ -1,0 +1,123 @@
+Checkout:
+Already on branch 849
+
+Fetch:
+From github.com:microsoft/intelligent-terminal
+ * branch                refs/pull/849/head -> FETCH_HEAD
+
+Fast-forward:
+Updating d0365fb81..f986d7cb8
+Fast-forward
+ doc/specs/Yolo-mode.md                             |   17 +-
+ .../CascadiaPackage/Resources/af-ZA/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/am-ET/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ar-SA/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/as-IN/Resources.resw |    2 +-
+ .../Resources/az-Latn-AZ/Resources.resw            |    2 +-
+ .../CascadiaPackage/Resources/bg-BG/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/bn-IN/Resources.resw |    2 +-
+ .../Resources/bs-Latn-BA/Resources.resw            |    2 +-
+ .../CascadiaPackage/Resources/ca-ES/Resources.resw |    2 +-
+ .../Resources/ca-Es-VALENCIA/Resources.resw        |    2 +-
+ .../CascadiaPackage/Resources/cs-CZ/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/cy-GB/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/da-DK/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/de-DE/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/el-GR/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/en-GB/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/en-US/Resources.resw |    8 +-
+ .../CascadiaPackage/Resources/es-ES/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/es-MX/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/et-EE/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/eu-ES/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/fa-IR/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/fi-FI/Resources.resw |    2 +-
+ .../Resources/fil-PH/Resources.resw                |    2 +-
+ .../CascadiaPackage/Resources/fr-CA/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/fr-FR/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ga-IE/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/gd-gb/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/gl-ES/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/gu-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/he-IL/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/hi-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/hr-HR/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/hu-HU/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/hy-AM/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/id-ID/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/is-IS/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/it-IT/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ja-JP/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ka-GE/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/kk-KZ/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/km-KH/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/kn-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ko-KR/Resources.resw |    2 +-
+ .../Resources/kok-IN/Resources.resw                |    2 +-
+ .../CascadiaPackage/Resources/lb-LU/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/lo-LA/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/lt-LT/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/lv-LV/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/mi-NZ/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/mk-MK/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ml-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/mr-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ms-MY/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/mt-MT/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/nb-NO/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ne-NP/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/nl-NL/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/nn-NO/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/or-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/pa-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/pl-PL/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/pt-BR/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/pt-PT/Resources.resw |    2 +-
+ .../Resources/qps-ploc/Resources.resw              |    8 +-
+ .../Resources/qps-ploca/Resources.resw             |    8 +-
+ .../Resources/qps-plocm/Resources.resw             |    8 +-
+ .../Resources/quz-PE/Resources.resw                |    2 +-
+ .../CascadiaPackage/Resources/ro-RO/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ru-RU/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/sk-SK/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/sl-SI/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/sq-AL/Resources.resw |    2 +-
+ .../Resources/sr-Cyrl-BA/Resources.resw            |    2 +-
+ .../Resources/sr-Cyrl-RS/Resources.resw            |    2 +-
+ .../Resources/sr-Latn-RS/Resources.resw            |    2 +-
+ .../CascadiaPackage/Resources/sv-SE/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ta-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/te-IN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/th-TH/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/tr-TR/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/tt-RU/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ug-CN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/uk-UA/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/ur-PK/Resources.resw |    2 +-
+ .../Resources/uz-Latn-UZ/Resources.resw            |    2 +-
+ .../CascadiaPackage/Resources/vi-VN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/zh-CN/Resources.resw |    2 +-
+ .../CascadiaPackage/Resources/zh-TW/Resources.resw |    2 +-
+ test/e2e/ItE2E/Public/Harness.ps1                  |   55 +-
+ test/e2e/selftests/ItE2E.Unit.Tests.ps1            |   37 +
+ tools/wta/Cargo.lock                               |    1 +
+ tools/wta/Cargo.toml                               |    2 +-
+ tools/wta/src/app.rs                               |  200 ++-
+ tools/wta/src/app/autofix.rs                       |    8 +-
+ tools/wta/src/app/tab_state.rs                     |   99 +-
+ tools/wta/src/app/turn_state.rs                    |   46 +-
+ tools/wta/src/app_contracts/event.rs               |   18 +
+ tools/wta/src/app_events.rs                        |  332 +++--
+ tools/wta/src/app_keys.rs                          |  142 +--
+ tools/wta/src/app_tests.rs                         | 1301 +++++++++++++++++--
+ tools/wta/src/app_turn.rs                          |  240 +++-
+ tools/wta/src/autofix_tests.rs                     |    2 +-
+ tools/wta/src/helper/runtime.rs                    |   11 +-
+ tools/wta/src/protocol/acp/client.rs               | 1333 ++++++++++++++------
+ tools/wta/src/protocol/acp/mock_agent_tests.rs     | 1235 ++++++++++++------
+ tools/wta/src/protocol/acp/native_yolo.rs          |   51 +-
+ .../protocol/acp/native_yolo/providers/copilot.rs  |   57 -
+ .../src/protocol/acp/native_yolo/providers/mod.rs  |    4 -
+ tools/wta/src/protocol/acp/native_yolo_tests.rs    |   53 -
+ tools/wta/src/slash_command_tests.rs               |   40 +
+ 112 files changed, 4100 insertions(+), 1386 deletions(-)

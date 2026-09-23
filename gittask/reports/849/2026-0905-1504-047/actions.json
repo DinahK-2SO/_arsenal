@@ -1,0 +1,11 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6fjxBq",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/849#discussion_r3940820935",
+    "path": "tools/wta/src/protocol/acp/client.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Commit ec672383 reintroduced provider_permission_contract_blocked but provider_disable_pending still passes the same hard-coded English detail as the error argument. No localized yolo_disable_pending key exists in the locale catalogs."
+  }
+]

@@ -1,0 +1,90 @@
+{
+  "author": {
+    "id": "U_kgDOBvTrEw",
+    "is_bot": false,
+    "login": "DinahK-2SO",
+    "name": "Dinah Xiaoman G"
+  },
+  "baseRefName": "main",
+  "baseRefOid": "b361d91b25dda4b455a7f58ca04909c90f56bae3",
+  "body": "## Summary of the Pull Request\n\nScopes automatic Yolo to the agent provider selected in Settings. Agent panes switched with `/agent` now enable the persisted preference only when their canonical provider matches the default; non-default providers actively reconcile off. Settings clears and disables Yolo for OpenCode, keeps Gemini conditional on workspace trust, and persists false when organization policy blocks Yolo.\n\n## References and Relevant Issues\n\n## Detailed Description of the Pull Request / Additional comments\n\n## Validation Steps Performed\n\nSettingsModel 44/44; WTA Yolo 78/78; rebind 6/6; full WTA 2009 passed, 1 ignored; Terminal focused 6/6; ItE2E self-tests 24/24; exact package Yolo 6 passed, 1 policy-ACL skip; SettingsEditor and TestHost builds succeeded; 16 locale XML/BOM checks and deployment freshness passed.\n\n## PR Checklist\n- [ ] Closes #xxx\n- [x] Tests added/passed\n- [x] Documentation updated\n   - In-repo Yolo design spec updated; no external docs PR.\n- [ ] Schema updated (if necessary)",
+  "commits": [
+    {
+      "authoredDate": "2026-09-03T19:35:03Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T19:35:50Z",
+      "messageBody": "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Scope Yolo to default agent provider",
+      "oid": "2cbe7179b83afc25db4158af08ff072d6770fa56"
+    },
+    {
+      "authoredDate": "2026-09-03T20:17:10Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T20:17:33Z",
+      "messageBody": "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Strengthen scoped Yolo package coverage",
+      "oid": "1453262cebc6090124b65696e969b46a3a98edfc"
+    },
+    {
+      "authoredDate": "2026-09-03T20:30:18Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T20:32:02Z",
+      "messageBody": "Refresh the OpenCode translator comments, guard their semantics with a source selftest, and remove an unused namespace alias.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Address Yolo review findings",
+      "oid": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62"
+    }
+  ],
+  "createdAt": "2026-09-03T20:11:07Z",
+  "headRefName": "user/DinahK-2SO/yolo-mode-next-publish",
+  "headRefOid": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+  "headRepositoryOwner": {
+    "id": "U_kgDOBvTrEw",
+    "name": "Dinah Xiaoman G",
+    "login": "DinahK-2SO"
+  },
+  "isDraft": false,
+  "number": 828,
+  "state": "OPEN",
+  "title": "Scope Yolo mode to the default agent provider",
+  "updatedAt": "2026-09-03T20:45:38Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/828"
+}

@@ -1,0 +1,17 @@
+PR: 911
+Worktree: C:\ado\gittask\code\intelligent-terminal-911
+Local branch: 911
+
+Initial state:
+- Main repository clean: yes
+- Local branch 911 did not exist.
+- PR worktree did not exist.
+
+Creation:
+- Fetched refs/pull/911/head into local branch 911.
+- Created C:\ado\gittask\code\intelligent-terminal-911.
+
+Final state:
+- Head: ee4bf99c366333f2b88d339c0bbf4f87efcabc04
+- PR worktree clean: yes
+

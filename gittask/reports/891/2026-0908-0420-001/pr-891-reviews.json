@@ -1,0 +1,15 @@
+{
+  "pullRequest": 891,
+  "conversationCommentCount": 1,
+  "reviewCount": 6,
+  "activeReviewThreadCount": 0,
+  "latestReview": {
+    "id": "PRR_kwDOSgzUZs8AAAABMjEfXQ",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/891#pullrequestreview-5137047389",
+    "state": "COMMENTED",
+    "author": "copilot-pull-request-reviewer",
+    "submittedAt": "2026-09-08T03:36:32Z",
+    "commitOid": "f38b881725b6f3e0b570b913cccb09cf65b0a890"
+  }
+}
+

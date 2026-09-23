@@ -1,0 +1,18 @@
+{
+  "author": {
+    "id": "MDQ6VXNlcjY5MzEzMzE4",
+    "is_bot": false,
+    "login": "vanzue",
+    "name": "Kai Tao"
+  },
+  "baseRefName": "main",
+  "body": "## Summary\r\n\r\nAdds a persistent global Yolo default (`agentPane.yoloMode`), gated by `AllowYoloMode`.\r\n\r\nWTA invokes only provider-advertised capabilities:\r\n\r\n- **Copilot:** `allow_all`\r\n- **Claude:** `bypassPermissions`\r\n- **Codex:** `agent-full-access`\r\n- **Gemini:** `yolo` through `session/set_mode`. Gemini's workspace trust and administrator checks remain authoritative. Current Gemini ACP cannot add trusted folders, so users must trust the workspace in Gemini first. WTA does not modify `trustedFolders.json` or bypass those checks.\r\n- OpenCode remain interactive as they don't support such capability in ACP yet.\r\n\r\nBy \"Yolo\" here in this PR, we mean enabling a provider's complete advertised ACP session capability as defined by that provider; it may reduce or bypass confirmations and may also change sandbox, file, or network access, and WTA does not split or narrow those effects.\r\n\r\n\r\n## Validation\r\n\r\n- Provider, permission, lifecycle, timeout, and race regression tests\r\n- Localized Settings and slash-command resources\r\n- Exact-package zero-token E2E\r\n- Local-only real-provider tool acceptance\r\n\r\nCloses #326\r\n",
+  "headRefName": "dev/vanzue/yolo-mode",
+  "headRefOid": "5e13925acf49cb7f0db940871a78d8c97d23a3eb",
+  "isDraft": false,
+  "number": 505,
+  "state": "OPEN",
+  "title": "Add provider-native Yolo mode for ACP sessions",
+  "updatedAt": "2026-09-03T08:47:25Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/505"
+}

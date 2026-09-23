@@ -1,0 +1,28 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCmk1Dg",
+  "number": 890,
+  "title": "Make Ctrl+A select editable agent chat drafts",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/890",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/agent-input-select-all-publish",
+  "headRefOid": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+  "baseRefName": "main",
+  "baseRefOid": "47b3e9234e32b9deff0bf070a16ad7ebb10514fa",
+  "commitCount": 3,
+  "commits": [
+    {
+      "oid": "116a0ea9dbe28806bab0b3f3b276e40f3d1fb4a2",
+      "messageHeadline": "Make agent Ctrl+A select editable chat drafts"
+    },
+    {
+      "oid": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "messageHeadline": "Allocate a unique checklist ID after main integration"
+    },
+    {
+      "oid": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+      "messageHeadline": "Clarify selection test markers and cover close-arm reachability"
+    }
+  ]
+}
+

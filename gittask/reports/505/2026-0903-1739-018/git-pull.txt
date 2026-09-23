@@ -1,0 +1,24 @@
+From github.com:microsoft/intelligent-terminal
+ * branch                dev/vanzue/yolo-mode -> FETCH_HEAD
+   c41aaafd6..5e13925ac  dev/vanzue/yolo-mode -> origin/dev/vanzue/yolo-mode
+Updating c41aaafd6..5e13925ac
+Fast-forward
+ doc/specs/Yolo-mode.md                             |  25 +-
+ src/cascadia/TerminalApp/AgentPaneContent.h        |  23 +-
+ src/cascadia/TerminalApp/AutofixState.h            |  22 +
+ src/cascadia/TerminalApp/TerminalAppLib.vcxproj    |   1 +
+ src/cascadia/TerminalApp/TerminalPage.cpp          |  20 +-
+ src/cascadia/TerminalApp/TerminalPage.xaml         |   7 +-
+ src/cascadia/ut_app/AutofixStateTests.cpp          |  33 ++
+ src/cascadia/ut_app/TerminalApp.UnitTests.vcxproj  |   1 +
+ tools/wta/src/protocol/acp/client.rs               | 126 ++--
+ tools/wta/src/protocol/acp/mock_agent_tests.rs     | 655 ++++++++++++++++++++-
+ tools/wta/src/protocol/acp/native_yolo.rs          | 430 ++++++++++----
+ .../protocol/acp/native_yolo/providers/claude.rs   |  14 +-
+ .../protocol/acp/native_yolo/providers/codex.rs    |  14 +-
+ .../protocol/acp/native_yolo/providers/copilot.rs  |  13 +-
+ .../src/protocol/acp/native_yolo/providers/mod.rs  |  81 ++-
+ tools/wta/src/protocol/acp/native_yolo_tests.rs    | 153 ++++-
+ 16 files changed, 1383 insertions(+), 235 deletions(-)
+ create mode 100644 src/cascadia/TerminalApp/AutofixState.h
+ create mode 100644 src/cascadia/ut_app/AutofixStateTests.cpp

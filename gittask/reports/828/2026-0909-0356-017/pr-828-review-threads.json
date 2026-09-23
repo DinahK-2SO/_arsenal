@@ -1,0 +1,26 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "94ae7318e292bf6a52565ad8f2abb59f2a0c4646",
+  "totalThreads": 21,
+  "resolvedThreads": 20,
+  "unresolvedThreads": 1,
+  "unresolved": [
+    {
+      "id": "PRRT_kwDOSgzUZs6fE1BE",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+      "isOutdated": true,
+      "decision": "won't fix",
+      "reply": null,
+      "reason": "AgentYoloPolicy explicitly preserves the legacy global preference for binding owners outside the adopted default-provider scope, and the locked test covers that compatibility boundary."
+    }
+  ],
+  "resolvedSincePreviousRun": [
+    {
+      "id": "PRRT_kwDOSgzUZs6gdBuQ",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3963363127",
+      "resolvedByThisRun": false,
+      "authorReply": "Selecting an agent that doesn't support automatic approval turns off the automatic approval, this is by design."
+    }
+  ]
+}
+

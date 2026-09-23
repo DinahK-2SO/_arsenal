@@ -1,0 +1,56 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6cWit2",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103416",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "No commits were added after 4176a7d4. Current capability discovery still checks Select kind after choosing the first id/category match."
+  },
+  {
+    "index": 2,
+    "threadId": "PRRT_kwDOSgzUZs6cWiuM",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103457",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "No commits were added after 4176a7d4. Copilot config discovery still accepts the current value as the restore value without requiring off."
+  },
+  {
+    "index": 3,
+    "threadId": "PRRT_kwDOSgzUZs6cv3OC",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054038",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "No commits were added after 4176a7d4. A non-Select id/category match can still hide a later valid Select option."
+  },
+  {
+    "index": 4,
+    "threadId": "PRRT_kwDOSgzUZs6cv3Oo",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054092",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "No commits were added after 4176a7d4. The provider contract still does not require Copilot's configured off restore value."
+  },
+  {
+    "index": 5,
+    "threadId": "PRRT_kwDOSgzUZs6d81jS",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3900298165",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At unchanged head 4176a7d4, capability discovery still stops at the first id/category match before validating Select kind."
+  },
+  {
+    "index": 6,
+    "threadId": "PRRT_kwDOSgzUZs6en6L1",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3917185580",
+    "path": "tools/wta/src/protocol/acp/client.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At unchanged head 4176a7d4, send-time policy enforcement remains conditional on prompt.is_agent_command(), preserving the asynchronous classification gap."
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "pullRequest": 891,
+  "headRefOid": "f38b881725b6f3e0b570b913cccb09cf65b0a890",
+  "totalThreads": 3,
+  "unresolvedThreads": 0,
+  "threads": [
+    {
+      "id": "PRRT_kwDOSgzUZs6gFT4Z",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gFT4f",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gFT4m",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    }
+  ]
+}
+

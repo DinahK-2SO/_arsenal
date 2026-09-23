@@ -1,0 +1,218 @@
+[
+  {
+    "group": 1,
+    "decision": "resolved",
+    "fixCommit": "8b24342c56c3a73a9caf5dda70074c5cc513e6b9",
+    "explanation": "the initializer now builds one WtaMeta containing the cloud catalog, resolved identity, and proposal capability, then injects that namespace only once",
+    "evidence": "Commit 8b24342 changes initialize_response_for_agent to add the ready catalog to the same WtaMeta used for identity/proposal metadata before one inject_wta_meta call.",
+    "confidence": "high"
+  },
+  {
+    "group": 5,
+    "decision": "active",
+    "fixCommit": null,
+    "explanation": null,
+    "evidence": "At 17bc4828231169ede2e67fdfa66f8b5fab8c5b9f, providers/mod.rs config_channel still finds the first id/category match and checks for Select only afterward, so a preceding non-Select still masks a later valid Select.",
+    "confidence": "high"
+  },
+  {
+    "group": 9,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the en-US locked-token annotation now lists only ACP, Yolo, and /new, removing the absent /yolo token",
+    "evidence": "Commit e3cec54 changes commands.yolo.summary in en-US.yml from Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\" to Locked=\"ACP\",\"Yolo\",\"/new\".",
+    "confidence": "high"
+  },
+  {
+    "group": 13,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the live Copilot tests now probe ACP readiness, classify authentication failures as installed-unauthenticated, and skip those environments instead of waiting for agent readiness",
+    "evidence": "Commit e3cec54 replaces the installed-only copilotReady gate with Get-AgentAcpStatus and excludes not-installed and installed-unauthenticated statuses from live Copilot and policy tests.",
+    "confidence": "high"
+  },
+  {
+    "group": 17,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the policy test now verifies the initial session receives native Yolo off and never receives native Yolo on before testing /yolo on rejection",
+    "evidence": "Commit e3cec54 adds Test-YoloNativeUpdate assertions for enabled=false and absence of enabled=true before sending the blocked slash command.",
+    "confidence": "high"
+  },
+  {
+    "group": 21,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Amharic catalog now uses an Amharic translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in am-ET.yml with Amharic text.",
+    "confidence": "high"
+  },
+  {
+    "group": 25,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Malayalam catalog now uses a Malayalam translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in ml-IN.yml with Malayalam text.",
+    "confidence": "high"
+  },
+  {
+    "group": 29,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Māori catalog now uses a Māori translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in mi-NZ.yml with Māori text.",
+    "confidence": "high"
+  },
+  {
+    "group": 33,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Traditional Chinese catalog now uses a Traditional Chinese translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in zh-TW.yml with Traditional Chinese text.",
+    "confidence": "high"
+  },
+  {
+    "group": 37,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Catalan catalog now uses a Catalan translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in ca-ES.yml with Catalan text.",
+    "confidence": "high"
+  },
+  {
+    "group": 41,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Lithuanian catalog now uses a Lithuanian translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in lt-LT.yml with Lithuanian text.",
+    "confidence": "high"
+  },
+  {
+    "group": 45,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Hebrew catalog now uses a Hebrew translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in he-IL.yml with Hebrew text.",
+    "confidence": "high"
+  },
+  {
+    "group": 49,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Galician catalog now uses a Galician translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in gl-ES.yml with Galician text.",
+    "confidence": "high"
+  },
+  {
+    "group": 53,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Croatian catalog now uses a Croatian translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in hr-HR.yml with Croatian text.",
+    "confidence": "high"
+  },
+  {
+    "group": 57,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Lao catalog now uses a Lao translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in lo-LA.yml with Lao text.",
+    "confidence": "high"
+  },
+  {
+    "group": 61,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Assamese catalog now uses an Assamese translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in as-IN.yml with Assamese text.",
+    "confidence": "high"
+  },
+  {
+    "group": 65,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Icelandic catalog now uses an Icelandic translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in is-IS.yml with Icelandic text.",
+    "confidence": "high"
+  },
+  {
+    "group": 69,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Greek catalog now uses a Greek translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in el-GR.yml with Greek text.",
+    "confidence": "high"
+  },
+  {
+    "group": 73,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Nepali catalog now uses a Nepali translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in ne-NP.yml with Nepali text.",
+    "confidence": "high"
+  },
+  {
+    "group": 77,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Filipino catalog now uses a Filipino translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in fil-PH.yml with Filipino text.",
+    "confidence": "high"
+  },
+  {
+    "group": 81,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Punjabi catalog now uses a Punjabi translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in pa-IN.yml with Punjabi text.",
+    "confidence": "high"
+  },
+  {
+    "group": 85,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Welsh catalog now uses a Welsh translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in cy-GB.yml with Welsh text.",
+    "confidence": "high"
+  },
+  {
+    "group": 89,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Odia catalog now uses an Odia translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in or-IN.yml with Odia text.",
+    "confidence": "high"
+  },
+  {
+    "group": 93,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the Telugu catalog now uses a Telugu translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in te-IN.yml with Telugu text.",
+    "confidence": "high"
+  },
+  {
+    "group": 97,
+    "decision": "resolved",
+    "fixCommit": "e3cec54da0989efcdc060d46de46fab0453339f7",
+    "explanation": "the European Portuguese catalog now uses a Portuguese translation for the Yolo slash-menu summary while preserving the required locked tokens",
+    "evidence": "Commit e3cec54 replaces the English commands.yolo.summary in pt-PT.yml with European Portuguese text.",
+    "confidence": "high"
+  },
+  {
+    "group": 101,
+    "decision": "resolved",
+    "fixCommit": "d6802724564cd781866cd731c630ea3e95a54c54",
+    "explanation": "lazy session attachment now compares the client-applied target with the latest effective Yolo state and schedules replacement reconciliation when they differ, superseding stale operations before prompt dispatch",
+    "evidence": "Commit d680272 stores the lazy operation target, compares it on SessionAttached, and adds session_attached_reconciles_stale_client_yolo_target to prove a changed effective state queues an off reconciliation.",
+    "confidence": "high"
+  },
+  {
+    "group": 105,
+    "decision": "resolved",
+    "fixCommit": "75beac2f7ce10217b4b5249cc7816fd71a884686",
+    "explanation": "the watcher target is now the IntelligentTerminal policy key itself, retaining ancestor fallback without recursively observing every Microsoft product policy",
+    "evidence": "Commit 75beac2 changes PolicyWatchRegKey from Software\\\\Policies\\\\Microsoft to a view of PolicyRegKey, Software\\\\Policies\\\\Microsoft\\\\IntelligentTerminal.",
+    "confidence": "high"
+  }
+]

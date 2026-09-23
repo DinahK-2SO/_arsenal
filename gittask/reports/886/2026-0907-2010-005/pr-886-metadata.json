@@ -1,0 +1,14 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABCivfBw",
+  "number": 886,
+  "title": "Align agent pane horizontal padding",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/886",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/agent-pane-padding-publish",
+  "headRefOid": "aee3a51263d6ffbee67ad3a6af9c0e094079c1ec",
+  "baseRefName": "main",
+  "baseRefOid": "de2dba8df3f777878037c1a0e03a5a5cf2792aba",
+  "commitCount": 1
+}
+

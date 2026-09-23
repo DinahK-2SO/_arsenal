@@ -1,0 +1,194 @@
+{
+  "author": {
+    "id": "U_kgDOBvTrEw",
+    "is_bot": false,
+    "login": "DinahK-2SO",
+    "name": "Dinah Xiaoman G"
+  },
+  "baseRefName": "main",
+  "body": "## Summary of the Pull Request\n\nScopes automatic Yolo to the agent provider selected in Settings. Agent panes switched with `/agent` now enable the persisted preference only when their canonical provider matches the default; non-default providers actively reconcile off. Settings clears and disables Yolo for OpenCode, keeps Gemini conditional on workspace trust, and persists false when organization policy blocks Yolo.\n\n## References and Relevant Issues\n\n## Detailed Description of the Pull Request / Additional comments\n\n## Validation Steps Performed\n\nSettingsModel 44/44; WTA Yolo 78/78; rebind 6/6; full WTA 2009 passed, 1 ignored; Terminal focused 6/6; ItE2E self-tests 24/24; exact package Yolo 6 passed, 1 policy-ACL skip; SettingsEditor and TestHost builds succeeded; 16 locale XML/BOM checks and deployment freshness passed.\n\n## PR Checklist\n- [ ] Closes #xxx\n- [x] Tests added/passed\n- [x] Documentation updated\n   - In-repo Yolo design spec updated; no external docs PR.\n- [ ] Schema updated (if necessary)",
+  "commits": [
+    {
+      "authoredDate": "2026-09-03T19:35:03Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T19:35:50Z",
+      "messageBody": "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Scope Yolo to default agent provider",
+      "oid": "2cbe7179b83afc25db4158af08ff072d6770fa56"
+    },
+    {
+      "authoredDate": "2026-09-03T20:17:10Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T20:17:33Z",
+      "messageBody": "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Strengthen scoped Yolo package coverage",
+      "oid": "1453262cebc6090124b65696e969b46a3a98edfc"
+    },
+    {
+      "authoredDate": "2026-09-03T20:30:18Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T20:32:02Z",
+      "messageBody": "Refresh the OpenCode translator comments, guard their semantics with a source selftest, and remove an unused namespace alias.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Address Yolo review findings",
+      "oid": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62"
+    },
+    {
+      "authoredDate": "2026-09-03T20:55:32Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T20:56:16Z",
+      "messageBody": "Compare translator-comment coverage with the discovered locale directories instead of a fixed locale count.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Make Yolo locale selftest dynamic",
+      "oid": "28ef341e03c8a6215cd745cb9d1f5cd10dcfbc86"
+    },
+    {
+      "authoredDate": "2026-09-03T21:11:40Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T21:12:19Z",
+      "messageBody": "Use the policy-filtered default agent for effective Yolo state and Settings enablement while preserving the raw preference.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Disable Yolo when the default agent is blocked",
+      "oid": "a6ea43153fa4d8719a42ce1f2f7f4891e1bb9adb"
+    },
+    {
+      "authoredDate": "2026-09-03T21:35:56Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T21:36:35Z",
+      "messageBody": "Clear policy-blocked Yolo on the Settings clone before writing it and guard the save boundary with a source selftest.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Normalize policy-blocked Yolo before settings save",
+      "oid": "1e736f6a94478144671cebb048452c4c627275fe"
+    },
+    {
+      "authoredDate": "2026-09-03T22:02:03Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T22:02:44Z",
+      "messageBody": "Leave the current provider unchanged until helper status confirms the rebind target, preventing hot Yolo updates from targeting an in-flight provider.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Keep agent identity authoritative during rebind",
+      "oid": "b9d07e00215c8f0d9fb075f8b8de5e2654b901f1"
+    },
+    {
+      "authoredDate": "2026-09-03T22:22:39Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-03T22:23:22Z",
+      "messageBody": "Document that hot Yolo events carry provider-resolved per-tab state rather than a window-wide default.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Clarify per-tab Yolo runtime updates",
+      "oid": "12536255734f950e89aff2d138b3df2ad9cb29e6"
+    }
+  ],
+  "createdAt": "2026-09-03T20:11:07Z",
+  "headRefName": "user/DinahK-2SO/yolo-mode-next-publish",
+  "headRefOid": "12536255734f950e89aff2d138b3df2ad9cb29e6",
+  "headRepositoryOwner": {
+    "id": "U_kgDOBvTrEw",
+    "name": "Dinah Xiaoman G",
+    "login": "DinahK-2SO"
+  },
+  "isDraft": false,
+  "number": 828,
+  "state": "OPEN",
+  "title": "Scope Yolo mode to the default agent provider",
+  "updatedAt": "2026-09-03T22:34:28Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/828"
+}

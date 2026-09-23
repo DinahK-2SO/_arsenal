@@ -1,0 +1,24 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABC_uRxA",
+  "number": 923,
+  "title": "Add grouped undo and redo to Agent Pane drafts",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/923",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/agent-input-undo-redo-publish",
+  "headRefOid": "20a34569753ae34a1cfdff2dc082b78eb01c96be",
+  "baseRefName": "main",
+  "baseRefOid": "5015f9dcff1f951d1d9a57e911f3633baed0f40d",
+  "commitCount": 4,
+  "newCommits": [
+    {
+      "oid": "ade90e638b52977faabb1df10ea032c63813fcb6",
+      "messageHeadline": "Clarify source anchored validation for input editing tests"
+    },
+    {
+      "oid": "20a34569753ae34a1cfdff2dc082b78eb01c96be",
+      "messageHeadline": "Avoid undo owner snapshots for animation ticks"
+    }
+  ]
+}
+

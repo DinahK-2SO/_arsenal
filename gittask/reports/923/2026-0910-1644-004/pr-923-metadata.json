@@ -1,0 +1,24 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABC_uRxA",
+  "number": 923,
+  "title": "Add grouped undo and redo to Agent Pane drafts",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/923",
+  "state": "OPEN",
+  "isDraft": false,
+  "headRefName": "user/DinahK-2SO/agent-input-undo-redo-publish",
+  "headRefOid": "45af75c57ce86e5fe122acae37c85cf389d6c143",
+  "baseRefName": "main",
+  "baseRefOid": "5015f9dcff1f951d1d9a57e911f3633baed0f40d",
+  "commitCount": 6,
+  "newCommits": [
+    {
+      "oid": "2eeff0afe1c8955dde764e4fd7a4c45d0fbabd2a",
+      "messageHeadline": "Observe active undo ownership without per-event allocation"
+    },
+    {
+      "oid": "45af75c57ce86e5fe122acae37c85cf389d6c143",
+      "messageHeadline": "Cover real clipboard image undo and restored ACP payloads"
+    }
+  ]
+}
+

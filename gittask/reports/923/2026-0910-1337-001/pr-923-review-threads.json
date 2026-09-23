@@ -1,0 +1,30 @@
+{
+  "pullRequest": 923,
+  "headRefOid": "85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01",
+  "totalThreads": 2,
+  "resolvedThreads": 0,
+  "unresolvedThreads": 2,
+  "unresolved": [
+    {
+      "id": "PRRT_kwDOSgzUZs6hFdtE",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/923#discussion_r3979422497",
+      "path": "tools/wta/src/app_tests.rs",
+      "line": 13525,
+      "originalCommit": "85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01",
+      "decision": "active",
+      "reply": null,
+      "reason": "The altgr token remains in the current test name and no later spelling fix or metadata change exists."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6hFnXv",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/923#discussion_r3979481078",
+      "path": "tools/wta/README.md",
+      "line": 190,
+      "originalCommit": "85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01",
+      "decision": "active",
+      "reply": null,
+      "reason": "The explanatory paragraph still interrupts the Markdown table before the permission-navigation row. No later fix commit exists."
+    }
+  ]
+}
+

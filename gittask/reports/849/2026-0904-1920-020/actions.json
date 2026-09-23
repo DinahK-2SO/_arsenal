@@ -1,0 +1,11 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6fQgyf",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/849#discussion_r3933229452",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/copilot.rs",
+    "decision": "resolved",
+    "reply": "Fixed in d0365fb81ab5f3de0db804ca1f1be5cf3b3d7230, clarified the block reason to distinguish Copilot CLI 1.0.83 stable from affected prereleases and added assertions for both stable and prerelease upgrade guidance.",
+    "evidence": "Commit d0365fb8 explicitly recommends 1.0.83 stable or later separately from prerelease 1.0.83-4 or later, and tests assert both messages."
+  }
+]

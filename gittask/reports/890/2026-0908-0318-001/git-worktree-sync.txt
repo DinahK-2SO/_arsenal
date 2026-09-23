@@ -1,0 +1,20 @@
+PR: 890
+Worktree: C:\ado\gittask\code\intelligent-terminal-890
+Local branch: 890
+
+Initial state:
+- Main repository clean: yes
+- PR worktree did not exist.
+- Local branch 890 did not exist.
+
+Creation:
+- Fetched refs/pull/890/head into local branch 890.
+- Created C:\ado\gittask\code\intelligent-terminal-890.
+- Initial head: 026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75
+
+Final refresh:
+- Fetched refs/pull/890/head inside the PR worktree.
+- Fast-forward result: Already up to date.
+- Final head: 026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75
+- PR worktree clean: yes
+

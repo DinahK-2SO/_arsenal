@@ -1,0 +1,126 @@
+{
+  "author": {
+    "id": "U_kgDOBvTrEw",
+    "is_bot": false,
+    "login": "DinahK-2SO",
+    "name": "Dinah Xiaoman G"
+  },
+  "baseRefName": "main",
+  "baseRefOid": "60b331e2aa443cfd8c38e16a1466019125bdcb95",
+  "body": "## Summary of the Pull Request\n\nCopilot ACP now handles Yolo-off permission requests correctly. Remove the Copilot-specific prompt restriction so Yolo-off sessions use the standard permission flow.\n\n## References and Relevant Issues\n\n## Detailed Description of the Pull Request / Additional comments\n\nRemoves the Copilot-only compatibility check and its associated version handling, tests, and documentation. Provider-native Yolo reconciliation and policy behavior remain unchanged.\n\n## Validation Steps Performed\n\nAfter merging current main: focused prompt tests 3/3, native Yolo 37/37, full WTA 2,046 passed with 1 ignored, and ItE2E selftests 35/35. Exact package build/deploy/freshness passed. Copilot 1.0.84-1 Yolo-off E2E displayed the permission prompt and produced no marker side effect.\n\n## PR Checklist\n- [ ] Closes #xxx\n- [x] Tests added/passed\n- [ ] Documentation updated\n   - If checked, please file a pull request on [our docs repo](https://github.com/MicrosoftDocs/terminal) and link it here: #xxx\n- [ ] Schema updated (if necessary)",
+  "commits": [
+    {
+      "authoredDate": "2026-09-04T10:41:45Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-04T10:41:45Z",
+      "messageBody": "Allow Copilot CLI 1.0.83-4 and later to use the standard prompt path while retaining the existing guard for affected and unknown versions.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Bound Copilot Yolo-off compatibility range",
+      "oid": "75bc6324b99cf24fcaba5b81ec77ae12cfb3706d"
+    },
+    {
+      "authoredDate": "2026-09-04T10:53:10Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-04T10:53:10Z",
+      "messageBody": "Recommend stable and prerelease fixed versions without suggesting a downgrade.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Clarify Copilot upgrade guidance",
+      "oid": "d0365fb81ab5f3de0db804ca1f1be5cf3b3d7230"
+    },
+    {
+      "authoredDate": "2026-09-05T13:20:38Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-05T13:20:38Z",
+      "messageBody": "Return Copilot Yolo-off sessions to the standard permission flow and remove the provider-specific version plumbing, tests, and documentation.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Remove Copilot Yolo-off compatibility restriction",
+      "oid": "a3a15e80b7ac2cadc1bace11292eb1ee06ee66e3"
+    },
+    {
+      "authoredDate": "2026-09-05T13:49:19Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        }
+      ],
+      "committedDate": "2026-09-05T13:49:19Z",
+      "messageBody": "Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>\n\n# Conflicts:\n#\ttools/wta/src/protocol/acp/client.rs\n#\ttools/wta/src/protocol/acp/mock_agent_tests.rs",
+      "messageHeadline": "Merge latest main into Copilot Yolo-off restriction removal",
+      "oid": "f986d7cb84bd619fe6d7033adc77f81060f7f1c0"
+    },
+    {
+      "authoredDate": "2026-09-05T14:10:35Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-05T14:10:35Z",
+      "messageBody": "Keep the existing config-update formatting helper while removing the Copilot-specific prompt restriction.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Preserve localized Yolo pending errors",
+      "oid": "ec67238343517c82c5f187a1e5d57fd55d039096"
+    }
+  ],
+  "createdAt": "2026-09-04T10:42:41Z",
+  "headRefName": "user/DinahK-2SO/copilot-acp-yolo-off-publish",
+  "headRefOid": "ec67238343517c82c5f187a1e5d57fd55d039096",
+  "headRepositoryOwner": {
+    "id": "U_kgDOBvTrEw",
+    "name": "Dinah Xiaoman G",
+    "login": "DinahK-2SO"
+  },
+  "isDraft": false,
+  "number": 849,
+  "state": "OPEN",
+  "title": "Remove Copilot Yolo-off compatibility restriction",
+  "updatedAt": "2026-09-05T14:24:03Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/849"
+}

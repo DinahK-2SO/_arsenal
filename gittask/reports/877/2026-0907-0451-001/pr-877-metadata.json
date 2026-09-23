@@ -1,0 +1,110 @@
+{
+  "author": {
+    "id": "U_kgDOBvTrEw",
+    "is_bot": false,
+    "login": "DinahK-2SO",
+    "name": "Dinah Xiaoman G"
+  },
+  "baseRefName": "main",
+  "baseRefOid": "2cb487da8f99fd888f4e0c3026d66deb9ddb5d5c",
+  "body": "## Summary of the Pull Request\n\nMakes Ctrl+mouse-wheel zoom text in agent panes before VT mouse tracking can consume the event. Plain and horizontal wheel input still reaches the agent, while ordinary terminal and Ctrl+Shift opacity behavior remain unchanged.\n\n## References and Relevant Issues\n\nCloses #790\n\n## Detailed Description of the Pull Request / Additional comments\n\nAgent panes run a mouse-tracking TUI, so the existing VT-first wheel route consumed Ctrl+wheel as chat scrolling. Agent TermControls now opt into a vertical Ctrl+wheel priority path. The default route remains unchanged. The PR also adds physical HWND wheel injection to ItE2E and release-checklist case C295.\n\n## Validation Steps Performed\n\n- Focused and neighboring Control unit tests passed, including vertical, plain, horizontal, default, and Ctrl+Shift wheel paths.\n- Exact publish package built and deployed with matching source/live binary hashes.\n- Official C295 packaged E2E passed 1/1.\n- Physical terminal/agent wheel suite passed 3/3 with fresh screenshots.\n\n## PR Checklist\n- [x] Closes #790\n- [x] Tests added/passed\n- [ ] Documentation updated\n- [ ] Schema updated (if necessary)",
+  "commits": [
+    {
+      "authoredDate": "2026-09-07T03:44:53Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-07T03:45:26Z",
+      "messageBody": "Prioritize vertical Ctrl+wheel zoom for agent TermControls while preserving plain and horizontal VT mouse input. Add focused unit coverage and physical packaged E2E coverage with release checklist mapping.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Fix agent pane Ctrl+wheel zoom",
+      "oid": "39014fcfeb70f6fefa20b323aac45bfb0917342b"
+    },
+    {
+      "authoredDate": "2026-09-07T04:11:28Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-07T04:11:42Z",
+      "messageBody": "Mark the P/Invoke as SetLastError-aware so failed cursor queries report the correct Win32 error.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Preserve GetCursorPos error reporting",
+      "oid": "087f876f2763223fd0b823d6ea92f5c4058eea35"
+    },
+    {
+      "authoredDate": "2026-09-07T04:21:06Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-07T04:21:28Z",
+      "messageBody": "Skip the physical-wheel case when foreground focus is unavailable and name the Win32 wheel input flag.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Harden physical wheel E2E input",
+      "oid": "2a010615caca333aba58eb3ac4f0b4723a26c3c0"
+    },
+    {
+      "authoredDate": "2026-09-07T04:31:13Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-07T04:31:34Z",
+      "messageBody": "Keep the implemented checklist total consistent with the updated 148-of-150 summary.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Correct E2E coverage count",
+      "oid": "6bcabdf00222a0a5ec594a8dc9ee8439fab82e6a"
+    }
+  ],
+  "createdAt": "2026-09-07T04:03:42Z",
+  "headRefName": "user/DinahK-2SO/agent-pane-zooming-publish",
+  "headRefOid": "6bcabdf00222a0a5ec594a8dc9ee8439fab82e6a",
+  "headRepositoryOwner": {
+    "id": "MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=",
+    "login": "microsoft"
+  },
+  "isDraft": false,
+  "number": 877,
+  "state": "OPEN",
+  "title": "Fix Ctrl+wheel zoom in agent panes",
+  "updatedAt": "2026-09-07T04:35:52Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/877"
+}

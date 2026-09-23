@@ -1,0 +1,47 @@
+{
+  "author": {
+    "id": "U_kgDOBvTrEw",
+    "is_bot": false,
+    "login": "DinahK-2SO",
+    "name": "Dinah Xiaoman G"
+  },
+  "baseRefName": "main",
+  "baseRefOid": "de2dba8df3f777878037c1a0e03a5a5cf2792aba",
+  "body": "## Summary of the Pull Request\n\nAligns the recommendation navigation hint with the Agent Pane's existing one-cell content lane instead of the full pane width. The change preserves vertical allocation, card-internal spacing, compact mode, input behavior, localization, and RTL alignment. Adds a Rust render regression and deterministic zero-token packaged E2E coverage mapped to checklist C299.\n\n## References and Relevant Issues\n\nCloses #793\n\n## Detailed Description of the Pull Request / Additional comments\n\nReuses the recommendation card rectangle's x/width when rendering its navigation hint, while retaining the hint row's y/height. This keeps layout policy in geometry rather than localized text.\n\n## Validation Steps Performed\n\n- Full WTA: 2078 passed, 0 failed, 1 ignored.\n- Exact publish HEAD `aee3a5126`: build, deploy, freshness, and packaged E2E passed.\n- Source/staged/installed `wta.exe` SHA-256 matched: `349703CF...ADDC2`.\n- C299 passed in fresh and incremental release reports.\n- Existing compact packaged case was attempted twice; its OS-level splitter never reached the historical <=9-row precondition. Compact unit coverage passed and the changed hint path is disabled in compact mode.\n\n## PR Checklist\n- [x] Closes #793\n- [x] Tests added/passed\n- [ ] Documentation updated\n- [ ] Schema updated (if necessary)",
+  "commits": [
+    {
+      "authoredDate": "2026-09-07T14:43:24Z",
+      "authors": [
+        {
+          "email": "116714259+DinahK-2SO@users.noreply.github.com",
+          "id": "U_kgDOBvTrEw",
+          "login": "DinahK-2SO",
+          "name": "Dinah Xiaoman G"
+        },
+        {
+          "email": "223556219+Copilot@users.noreply.github.com",
+          "id": "BOT_kgDODVMyew",
+          "login": "Copilot",
+          "name": "Copilot"
+        }
+      ],
+      "committedDate": "2026-09-07T14:44:59Z",
+      "messageBody": "Align recommendation navigation hints with the existing panel inset and add deterministic unit and packaged regression coverage for #793.\n\nCo-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>",
+      "messageHeadline": "Fix agent pane horizontal padding",
+      "oid": "aee3a51263d6ffbee67ad3a6af9c0e094079c1ec"
+    }
+  ],
+  "createdAt": "2026-09-07T15:13:26Z",
+  "headRefName": "user/DinahK-2SO/agent-pane-padding-publish",
+  "headRefOid": "aee3a51263d6ffbee67ad3a6af9c0e094079c1ec",
+  "headRepositoryOwner": {
+    "id": "MDEyOk9yZ2FuaXphdGlvbjYxNTQ3MjI=",
+    "login": "microsoft"
+  },
+  "isDraft": false,
+  "number": 886,
+  "state": "OPEN",
+  "title": "Align agent pane horizontal padding",
+  "updatedAt": "2026-09-07T15:17:25Z",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/886"
+}

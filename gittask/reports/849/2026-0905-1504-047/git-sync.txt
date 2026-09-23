@@ -1,0 +1,12 @@
+Checkout:
+Already on branch 849
+
+Fetch:
+From github.com:microsoft/intelligent-terminal
+ * branch                refs/pull/849/head -> FETCH_HEAD
+
+Fast-forward:
+Updating f986d7cb8..ec6723834
+Fast-forward
+ tools/wta/src/protocol/acp/client.rs | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)

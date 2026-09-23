@@ -1,0 +1,11 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6fjxBq",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/849#discussion_r3940820935",
+    "path": "tools/wta/src/protocol/acp/client.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At current head f986d7cb, provider_disable_pending passes the hard-coded English detail directly into system.config_update_failed. No later commit localizes this reason."
+  }
+]

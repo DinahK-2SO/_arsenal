@@ -1,0 +1,56 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6cWit2",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103416",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The new commits do not change selector discovery. It still checks Select kind after choosing the first id/category match."
+  },
+  {
+    "index": 2,
+    "threadId": "PRRT_kwDOSgzUZs6cWiuM",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103457",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The new Copilot safety gate does not change config capability validation; discovery still accepts the current value as restore without requiring off."
+  },
+  {
+    "index": 3,
+    "threadId": "PRRT_kwDOSgzUZs6cv3OC",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054038",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The providers/mod.rs change only adds disabled_prompt_block_reason; a non-Select id/category match can still hide a later valid Select option."
+  },
+  {
+    "index": 4,
+    "threadId": "PRRT_kwDOSgzUZs6cv3Oo",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054092",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The new provider changes do not require Copilot's configured off restore value as part of capability validation."
+  },
+  {
+    "index": 5,
+    "threadId": "PRRT_kwDOSgzUZs6d81jS",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3900298165",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At head c41aaafd, capability discovery still stops at the first id/category match before validating Select kind."
+  },
+  {
+    "index": 6,
+    "threadId": "PRRT_kwDOSgzUZs6ezQu3",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3921727168",
+    "path": "tools/wta/src/app_contracts/yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At current head, YoloState::effective ignores session_id and returns only the global default, while client prompt guards use this value for provider permission safety. There is no later fixing commit."
+  }
+]

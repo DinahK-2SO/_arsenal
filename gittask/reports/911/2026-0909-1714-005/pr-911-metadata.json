@@ -1,0 +1,13 @@
+{
+  "id": "PR_kwDOSgzUZs8AAAABC1EHnA",
+  "number": 911,
+  "title": "Enable Up/Down keypress for caret movement through multiple lines in the Agent Pane chat input",
+  "url": "https://github.com/microsoft/intelligent-terminal/pull/911",
+  "state": "OPEN",
+  "headRefName": "user/DinahK-2SO/agent-input-multiline-cursor-publish",
+  "headRefOid": "41ad533d7f41ebc15ef878a9e92a31f527f83aeb",
+  "baseRefName": "main",
+  "baseRefOid": "1d0f05252e8910771fb393195ad5ab8ce6a4c34a",
+  "commitCount": 6
+}
+

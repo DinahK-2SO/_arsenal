@@ -1,0 +1,47 @@
+[
+  {
+    "index": 1,
+    "threadId": "PRRT_kwDOSgzUZs6cWit2",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103416",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Commit 281d48d8 only changes client-side provider command policy enforcement. Capability discovery still checks Select kind after choosing the first id/category match."
+  },
+  {
+    "index": 2,
+    "threadId": "PRRT_kwDOSgzUZs6cWiuM",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103457",
+    "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "Commit 281d48d8 does not change provider capability validation. Copilot discovery still accepts the current value as restore without requiring off."
+  },
+  {
+    "index": 3,
+    "threadId": "PRRT_kwDOSgzUZs6cv3OC",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054038",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The new commit does not modify providers/mod.rs; a non-Select id/category match can still hide a later valid Select option."
+  },
+  {
+    "index": 4,
+    "threadId": "PRRT_kwDOSgzUZs6cv3Oo",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054092",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "The new commit does not modify providers/mod.rs; the Copilot contract still does not require its configured off restore value."
+  },
+  {
+    "index": 5,
+    "threadId": "PRRT_kwDOSgzUZs6d81jS",
+    "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3900298165",
+    "path": "tools/wta/src/protocol/acp/native_yolo/providers/mod.rs",
+    "decision": "active",
+    "reply": null,
+    "evidence": "At head 281d48d8, capability discovery still stops at the first id/category match before validating Select kind."
+  }
+]

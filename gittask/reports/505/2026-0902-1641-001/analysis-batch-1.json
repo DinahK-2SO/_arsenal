@@ -1,0 +1,542 @@
+[
+  {
+    "group": 1,
+    "body": "`inject_ready_cloud_catalog` first writes `cloud_models` into `_meta.wta`, but this second `inject_wta_meta` call replaces that entire namespace rather than merging it. Because the new identity metadata is now injected unconditionally, every initialize response with a ready host cloud catalog loses the catalog before reaching the helper, breaking the model picker for those agents. Build one trusted `WtaMeta` containing the catalog, resolved identity, and proposal capability, then inject it once.",
+    "members": [
+      {
+        "index": 1,
+        "threadId": "PRRT_kwDOSgzUZs6YiAvc",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3765534766",
+        "path": "tools/wta/src/master/mod.rs",
+        "line": null,
+        "originalLine": 527,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "3adc45bc69941cad108ca9799df78a1d42c95de8",
+        "originalCommit": "e0d77a9164dab248b96f0d7abbfae7626a131e1b",
+        "createdAt": "2026-08-12T10:21:13Z",
+        "diffHunk": "@@ -516,15 +517,14 @@ async fn initialize_response_for_agent(\n ) -> Result<acp::schema::v1::InitializeResponse, serde_json::Error> {\r\n     let mut response = agent.cached_init_resp.clone();\r\n     inject_ready_cloud_catalog(agent, &mut response.meta).await?;\r\n-    if session_mcp_available {\r\n-        crate::session_registry::inject_wta_meta(\r\n-            &mut response.meta,\r\n-            &crate::session_registry::WtaMeta {\r\n-                proposal_mcp: Some(\"http-v1\".to_string()),\r\n-                ..Default::default()\r\n-            },\r\n-        );\r\n-    }\r\n+    crate::session_registry::inject_wta_meta(\r\n+        &mut response.meta,\r\n+        &crate::session_registry::WtaMeta {\r\n+            resolved_agent_id: Some(agent.resolved_agent_id.clone()),\r\n+            proposal_mcp: session_mcp_available.then(|| \"http-v1\".to_string()),\r\n+            ..Default::default()\r\n+        },\r\n+    );\r"
+      }
+    ]
+  },
+  {
+    "group": 5,
+    "body": "The search stops at the first matching id/category before checking its kind. If an agent advertises a same-named non-Select entry before the valid Select entry, capability discovery incorrectly fails instead of continuing to the valid selector. Include the kind check in the predicate, as the model-selector path does.",
+    "members": [
+      {
+        "index": 5,
+        "threadId": "PRRT_kwDOSgzUZs6cWit2",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103416",
+        "path": "tools/wta/src/protocol/acp/native_yolo.rs",
+        "line": null,
+        "originalLine": 442,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "0e8be3a9815a3fba8339f045ecb9eeae8e321fcb",
+        "originalCommit": "0e8be3a9815a3fba8339f045ecb9eeae8e321fcb",
+        "createdAt": "2026-08-26T06:13:24Z",
+        "diffHunk": "@@ -0,0 +1,558 @@\n+//! Provider-native ACP Yolo capability discovery and coordination.\n+//!\n+//! This module maps master-attested built-in provider identities to exact\n+//! advertised session contracts, captures restore values per session, and\n+//! sequences RPCs so stale operations cannot win. The App owns desired Yolo\n+//! state; ordinary permission requests always remain user-selected.\n+\n+use std::collections::HashMap;\n+use std::sync::atomic::{AtomicU64, Ordering};\n+use std::sync::{Arc, Mutex, RwLock};\n+\n+use agent_client_protocol as acp;\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+enum NativeYoloAction {\n+    SetConfigOption { config_id: String, value: String },\n+    SetMode { mode_id: String },\n+    Noop,\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+enum NativeYoloChannel {\n+    ConfigOption {\n+        config_id: String,\n+        enable_value: String,\n+        restore_value: String,\n+        current_value: String,\n+    },\n+    Mode {\n+        enable_mode_id: String,\n+        restore_mode_id: String,\n+        current_mode_id: String,\n+    },\n+}\n+\n+#[derive(Clone, Debug, PartialEq, Eq)]\n+enum SessionNativeYolo {\n+    Available(NativeYoloChannel),\n+    UnsupportedProvider { provider: String },\n+    MissingCapability { provider: String, loaded: bool },\n+}\n+\n+#[derive(Clone, Copy)]\n+struct ConfigSpec {\n+    id: &'static str,\n+    category: &'static str,\n+    enable_value: &'static str,\n+    default_restore_value: &'static str,\n+}\n+\n+#[derive(Clone, Copy)]\n+struct ModeSpec {\n+    enable_mode_id: &'static str,\n+    default_restore_mode_id: &'static str,\n+}\n+\n+#[derive(Clone, Copy)]\n+struct ProviderSpec {\n+    config: Option<ConfigSpec>,\n+    mode: Option<ModeSpec>,\n+}\n+\n+#[derive(Clone, Debug)]\n+pub(crate) struct NativeYoloOperation {\n+    session_id: acp::schema::v1::SessionId,\n+    enabled: bool,\n+    sequence: u64,\n+    generation: Option<u64>,\n+}\n+\n+pub(crate) struct NativeYoloState {\n+    agent_id: RwLock<Option<String>>,\n+    sessions: RwLock<HashMap<acp::schema::v1::SessionId, SessionNativeYolo>>,\n+    session_generations: Mutex<HashMap<acp::schema::v1::SessionId, u64>>,\n+    operation_gates: Mutex<HashMap<acp::schema::v1::SessionId, Arc<tokio::sync::Mutex<()>>>>,\n+    desired_operations: Mutex<HashMap<acp::schema::v1::SessionId, u64>>,\n+    next_generation: AtomicU64,\n+    next_operation: AtomicU64,\n+}\n+\n+impl NativeYoloState {\n+    pub(crate) fn new() -> Self {\n+        Self {\n+            agent_id: RwLock::new(None),\n+            sessions: RwLock::new(HashMap::new()),\n+            session_generations: Mutex::new(HashMap::new()),\n+            operation_gates: Mutex::new(HashMap::new()),\n+            desired_operations: Mutex::new(HashMap::new()),\n+            next_generation: AtomicU64::new(1),\n+            next_operation: AtomicU64::new(1),\n+        }\n+    }\n+\n+    pub(crate) fn set_resolved_agent_id(&self, agent_id: Option<&str>) {\n+        let next = agent_id.map(str::to_string);\n+        let mut current = self.agent_id.write().unwrap();\n+        if *current != next {\n+            *current = next;\n+            self.sessions.write().unwrap().clear();\n+            self.session_generations.lock().unwrap().clear();\n+            self.operation_gates.lock().unwrap().clear();\n+            self.desired_operations.lock().unwrap().clear();\n+        }\n+    }\n+\n+    pub(crate) fn record_from_new_session(&self, response: &acp::schema::v1::NewSessionResponse) {\n+        self.record_capability(\n+            &response.session_id,\n+            response.config_options.as_deref(),\n+            response.modes.as_ref(),\n+            false,\n+        );\n+    }\n+\n+    pub(crate) fn record_from_load_session(\n+        &self,\n+        session_id: &acp::schema::v1::SessionId,\n+        response: &acp::schema::v1::LoadSessionResponse,\n+    ) {\n+        self.record_capability(\n+            session_id,\n+            response.config_options.as_deref(),\n+            response.modes.as_ref(),\n+            true,\n+        );\n+    }\n+\n+    pub(crate) fn record_from_config_update(\n+        &self,\n+        session_id: &acp::schema::v1::SessionId,\n+        config_options: &[acp::schema::v1::SessionConfigOption],\n+    ) {\n+        let Some(spec) = self.provider_spec() else {\n+            return;\n+        };\n+        let Some(config_spec) = spec.config else {\n+            return;\n+        };\n+        let Some(previous) = self.sessions.read().unwrap().get(session_id).cloned() else {\n+            return;\n+        };\n+        let Some(channel) = config_channel(config_options, config_spec, Some(&previous)) else {\n+            return;\n+        };\n+        self.sessions\n+            .write()\n+            .unwrap()\n+            .insert(session_id.clone(), SessionNativeYolo::Available(channel));\n+    }\n+\n+    pub(crate) fn record_current_mode(\n+        &self,\n+        session_id: &acp::schema::v1::SessionId,\n+        current_mode_id: &str,\n+    ) {\n+        let mut sessions = self.sessions.write().unwrap();\n+        let Some(SessionNativeYolo::Available(NativeYoloChannel::Mode {\n+            enable_mode_id,\n+            restore_mode_id,\n+            current_mode_id: known_current,\n+        })) = sessions.get_mut(session_id)\n+        else {\n+            return;\n+        };\n+        if current_mode_id != enable_mode_id {\n+            *restore_mode_id = current_mode_id.to_string();\n+        }\n+        *known_current = current_mode_id.to_string();\n+    }\n+\n+    pub(crate) fn forget_session(&self, session_id: &acp::schema::v1::SessionId) {\n+        self.sessions.write().unwrap().remove(session_id);\n+        let tombstone = self.next_generation.fetch_add(1, Ordering::Relaxed);\n+        self.session_generations\n+            .lock()\n+            .unwrap()\n+            .insert(session_id.clone(), tombstone);\n+        self.desired_operations.lock().unwrap().remove(session_id);\n+        let mut gates = self.operation_gates.lock().unwrap();\n+        if gates\n+            .get(session_id)\n+            .is_some_and(|gate| Arc::strong_count(gate) == 1)\n+        {\n+            gates.remove(session_id);\n+        }\n+    }\n+\n+    pub(crate) fn reserve_operation(\n+        &self,\n+        session_id: acp::schema::v1::SessionId,\n+        enabled: bool,\n+    ) -> NativeYoloOperation {\n+        let sequence = self.next_operation.fetch_add(1, Ordering::Relaxed);\n+        let generation = self\n+            .session_generations\n+            .lock()\n+            .unwrap()\n+            .get(&session_id)\n+            .copied();\n+        self.desired_operations\n+            .lock()\n+            .unwrap()\n+            .insert(session_id.clone(), sequence);\n+        NativeYoloOperation {\n+            session_id,\n+            enabled,\n+            sequence,\n+            generation,\n+        }\n+    }\n+\n+    pub(crate) async fn apply(\n+        &self,\n+        conn: &crate::protocol::acp::conn::ClientLink,\n+        session_id: acp::schema::v1::SessionId,\n+        enabled: bool,\n+    ) -> Result<(), String> {\n+        let operation = self.reserve_operation(session_id, enabled);\n+        self.apply_reserved(conn, operation).await\n+    }\n+\n+    pub(crate) async fn apply_reserved(\n+        &self,\n+        conn: &crate::protocol::acp::conn::ClientLink,\n+        operation: NativeYoloOperation,\n+    ) -> Result<(), String> {\n+        let gate = self\n+            .operation_gates\n+            .lock()\n+            .unwrap()\n+            .entry(operation.session_id.clone())\n+            .or_insert_with(|| Arc::new(tokio::sync::Mutex::new(())))\n+            .clone();\n+        let _guard = gate.lock().await;\n+        if !self.operation_is_current(&operation) {\n+            return Ok(());\n+        }\n+        let action = self.action_for(&operation.session_id, operation.enabled)?;\n+        match &action {\n+            NativeYoloAction::SetConfigOption { config_id, value } => {\n+                let response = conn\n+                    .set_session_config_option(acp::schema::v1::SetSessionConfigOptionRequest::new(\n+                        operation.session_id.clone(),\n+                        config_id.clone(),\n+                        value.as_str(),\n+                    ))\n+                    .await;\n+                if !self.operation_is_current(&operation) {\n+                    return Ok(());\n+                }\n+                let response = response.map_err(|error| error.to_string())?;\n+                self.record_from_config_update(&operation.session_id, &response.config_options);\n+            }\n+            NativeYoloAction::SetMode { mode_id } => {\n+                let response = conn\n+                    .set_session_mode(acp::schema::v1::SetSessionModeRequest::new(\n+                        operation.session_id.clone(),\n+                        mode_id.clone(),\n+                    ))\n+                    .await;\n+                if !self.operation_is_current(&operation) {\n+                    return Ok(());\n+                }\n+                response.map_err(|error| error.to_string())?;\n+                self.record_current_mode(&operation.session_id, mode_id);\n+            }\n+            NativeYoloAction::Noop => {}\n+        }\n+        Ok(())\n+    }\n+\n+    fn operation_is_current(&self, operation: &NativeYoloOperation) -> bool {\n+        self.desired_operations\n+            .lock()\n+            .unwrap()\n+            .get(&operation.session_id)\n+            .copied()\n+            == Some(operation.sequence)\n+            && self\n+                .session_generations\n+                .lock()\n+                .unwrap()\n+                .get(&operation.session_id)\n+                .copied()\n+                == operation.generation\n+    }\n+\n+    fn action_for(\n+        &self,\n+        session_id: &acp::schema::v1::SessionId,\n+        enabled: bool,\n+    ) -> Result<NativeYoloAction, String> {\n+        match self.sessions.read().unwrap().get(session_id) {\n+            Some(SessionNativeYolo::Available(NativeYoloChannel::ConfigOption {\n+                config_id,\n+                enable_value,\n+                restore_value,\n+                ..\n+            })) => Ok(NativeYoloAction::SetConfigOption {\n+                config_id: config_id.clone(),\n+                value: if enabled { enable_value } else { restore_value }.clone(),\n+            }),\n+            Some(SessionNativeYolo::Available(NativeYoloChannel::Mode {\n+                enable_mode_id,\n+                restore_mode_id,\n+                ..\n+            })) => Ok(NativeYoloAction::SetMode {\n+                mode_id: if enabled {\n+                    enable_mode_id\n+                } else {\n+                    restore_mode_id\n+                }\n+                .clone(),\n+            }),\n+            Some(SessionNativeYolo::UnsupportedProvider { provider }) if !enabled => {\n+                Ok(NativeYoloAction::Noop)\n+            }\n+            Some(SessionNativeYolo::UnsupportedProvider { provider }) => {\n+                Err(format!(\"{provider} does not support ACP session Yolo mode\"))\n+            }\n+            Some(SessionNativeYolo::MissingCapability { loaded: false, .. }) if !enabled => {\n+                Ok(NativeYoloAction::Noop)\n+            }\n+            Some(SessionNativeYolo::MissingCapability { provider, .. }) => Err(format!(\n+                \"{provider} did not advertise its expected ACP session Yolo capability\"\n+            )),\n+            None => Err(\"the session has no advertised ACP Yolo capability\".to_string()),\n+        }\n+    }\n+\n+    fn record_capability(\n+        &self,\n+        session_id: &acp::schema::v1::SessionId,\n+        config_options: Option<&[acp::schema::v1::SessionConfigOption]>,\n+        modes: Option<&acp::schema::v1::SessionModeState>,\n+        loaded: bool,\n+    ) {\n+        let generation = self.next_generation.fetch_add(1, Ordering::Relaxed);\n+        self.session_generations\n+            .lock()\n+            .unwrap()\n+            .insert(session_id.clone(), generation);\n+        self.desired_operations.lock().unwrap().remove(session_id);\n+        let provider = self\n+            .agent_id\n+            .read()\n+            .unwrap()\n+            .clone()\n+            .unwrap_or_else(|| \"current provider\".to_string());\n+        let previous = self.sessions.read().unwrap().get(session_id).cloned();\n+        let capability = match provider_spec(&provider) {\n+            Some(spec) => {\n+                let discovered = spec\n+                    .config\n+                    .and_then(|config| {\n+                        config_options\n+                            .and_then(|options| config_channel(options, config, previous.as_ref()))\n+                    })\n+                    .or_else(|| {\n+                        spec.mode.and_then(|mode| {\n+                            modes.and_then(|state| mode_channel(state, mode, previous.as_ref()))\n+                        })\n+                    });\n+                discovered\n+                    .map(SessionNativeYolo::Available)\n+                    .unwrap_or_else(|| SessionNativeYolo::MissingCapability { provider, loaded })\n+            }\n+            None => SessionNativeYolo::UnsupportedProvider { provider },\n+        };\n+        self.sessions\n+            .write()\n+            .unwrap()\n+            .insert(session_id.clone(), capability);\n+    }\n+\n+    fn provider_spec(&self) -> Option<ProviderSpec> {\n+        self.agent_id\n+            .read()\n+            .unwrap()\n+            .as_deref()\n+            .and_then(provider_spec)\n+    }\n+}\n+\n+fn provider_spec(agent_id: &str) -> Option<ProviderSpec> {\n+    match agent_id {\n+        crate::agent_registry::COPILOT_AGENT_ID => Some(ProviderSpec {\n+            config: Some(ConfigSpec {\n+                id: \"allow_all\",\n+                category: \"permissions\",\n+                enable_value: \"on\",\n+                default_restore_value: \"off\",\n+            }),\n+            mode: None,\n+        }),\n+        crate::agent_registry::CLAUDE_AGENT_ID => Some(ProviderSpec {\n+            config: Some(ConfigSpec {\n+                id: \"mode\",\n+                category: \"mode\",\n+                enable_value: \"bypassPermissions\",\n+                default_restore_value: \"default\",\n+            }),\n+            mode: Some(ModeSpec {\n+                enable_mode_id: \"bypassPermissions\",\n+                default_restore_mode_id: \"default\",\n+            }),\n+        }),\n+        crate::agent_registry::CODEX_AGENT_ID => Some(ProviderSpec {\n+            config: Some(ConfigSpec {\n+                id: \"mode\",\n+                category: \"mode\",\n+                enable_value: \"agent-full-access\",\n+                default_restore_value: \"agent\",\n+            }),\n+            mode: Some(ModeSpec {\n+                enable_mode_id: \"agent-full-access\",\n+                default_restore_mode_id: \"agent\",\n+            }),\n+        }),\n+        crate::agent_registry::GEMINI_AGENT_ID => Some(ProviderSpec {\n+            config: None,\n+            mode: Some(ModeSpec {\n+                enable_mode_id: \"yolo\",\n+                default_restore_mode_id: \"default\",\n+            }),\n+        }),\n+        _ => None,\n+    }\n+}\n+\n+fn config_channel(\n+    options: &[acp::schema::v1::SessionConfigOption],\n+    spec: ConfigSpec,\n+    previous: Option<&SessionNativeYolo>,\n+) -> Option<NativeYoloChannel> {\n+    let option = options.iter().find(|option| {\n+        option.id.0.as_ref() == spec.id\n+            && category_name(option.category.as_ref()).as_deref() == Some(spec.category)\n+    })?;\n+    let acp::schema::v1::SessionConfigKind::Select(select) = &option.kind else {\n+        return None;\n+    };"
+      }
+    ]
+  },
+  {
+    "group": 9,
+    "body": "The `{Locked}` annotation includes `/yolo`, but `/yolo` does not occur in this resource value. Locked-token comments are consumed as translator constraints and must name tokens actually present; remove `/yolo` from the annotation (the command name is rendered separately).",
+    "members": [
+      {
+        "index": 9,
+        "threadId": "PRRT_kwDOSgzUZs6cWiu5",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3860103523",
+        "path": "tools/wta/locales/en-US.yml",
+        "line": null,
+        "originalLine": 96,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "0e8be3a9815a3fba8339f045ecb9eeae8e321fcb",
+        "createdAt": "2026-08-26T06:13:26Z",
+        "diffHunk": "@@ -93,6 +93,7 @@ commands.agent.summary: \"Pick the agent for this tab (/agent <id> to switch dire\n commands.model.summary: \"Pick the model for this pane (/model <id> to switch directly)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Configure this agent session\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Move this tab's agent pane (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 13,
+    "body": "These live Copilot tests treat an installed but unauthenticated CLI as ready, then fail at `Wait-AgentReady` even though authentication is an external prerequisite. Determine readiness with `Get-AgentCliStatus` (retaining a separate installed-only flag if desired for the settings round-trip case) so unauthenticated environments are reported as skips rather than product failures.",
+    "members": [
+      {
+        "index": 13,
+        "threadId": "PRRT_kwDOSgzUZs6cv3QC",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870054212",
+        "path": "test/e2e/tests/Feature.YoloMode.Tests.ps1",
+        "line": null,
+        "originalLine": 11,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "ffe5b13ec17f8d156ea13153f7c9eeb12eb6807d",
+        "createdAt": "2026-08-27T08:33:56Z",
+        "diffHunk": "@@ -0,0 +1,328 @@\n+#Requires -Modules @{ ModuleName='Pester'; ModuleVersion='5.0.0' }\r\n+# PR #505: provider-native ACP Yolo modes. The deterministic fixture proves WTA never\r\n+# selects a provider permission option; real providers prove native mode acknowledgement\r\n+# and a normal-user-cost chat/tool workflow against the deployed package.\r\n+\r\n+BeforeDiscovery {\r\n+    Import-Module (Join-Path $PSScriptRoot '..\\ItE2E\\ItE2E.psd1') -Force\r\n+    $script:Ready = $false\r\n+    $script:copilotReady = [bool](Get-Command copilot -ErrorAction SilentlyContinue)\r\n+    $script:openCodeReady = [bool](Get-Command opencode -ErrorAction SilentlyContinue)\r\n+    $script:policyReady = $script:copilotReady -and (Test-WtAgentPolicyControllable)\r"
+      }
+    ]
+  },
+  {
+    "group": 17,
+    "body": "The mapped C292 contract says policy overrides a stored global-on default and rejects `/yolo on`, but this test asserts only the slash-command rejection. It would still pass if startup incorrectly enabled provider-native Yolo despite the policy. Assert the initial session is reconciled off (or that no native-on operation occurs) before checking the command.",
+    "members": [
+      {
+        "index": 17,
+        "threadId": "PRRT_kwDOSgzUZs6cwypY",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870421429",
+        "path": "test/e2e/tests/Feature.YoloMode.Tests.ps1",
+        "line": 211,
+        "originalLine": 147,
+        "isOutdated": false,
+        "viewerCanResolve": true,
+        "reviewedCommit": "17bc4828231169ede2e67fdfa66f8b5fab8c5b9f",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:16Z",
+        "diffHunk": "@@ -0,0 +1,162 @@\n+#Requires -Modules @{ ModuleName='Pester'; ModuleVersion='5.0.0' }\r\n+# PR #505: provider-native ACP Yolo modes. This publishable suite is intentionally zero-token:\r\n+# deterministic fixtures and provider handshakes prove product behavior without model prompts.\r\n+# Real model/tool acceptance lives only in local-tdd-kit/Feature.YoloMode.RealUser.Tests.ps1.\r\n+\r\n+BeforeDiscovery {\r\n+    Import-Module (Join-Path $PSScriptRoot '..\\ItE2E\\ItE2E.psd1') -Force\r\n+    $script:Ready = $false\r\n+    $script:copilotReady = [bool](Get-Command copilot -ErrorAction SilentlyContinue)\r\n+    $script:openCodeReady = [bool](Get-Command opencode -ErrorAction SilentlyContinue)\r\n+    $script:policyReady = $script:copilotReady -and (Test-WtAgentPolicyControllable)\r\n+    try {\r\n+        $null = Resolve-ItApp -Package Dev -ErrorAction Stop\r\n+        $script:Ready = Test-WinAppAvailable\r\n+    }\r\n+    catch {\r\n+        $script:Ready = $false\r\n+    }\r\n+}\r\n+\r\n+Describe 'Feature Yolo mode permission boundary' -Tag 'Feature' -Skip:(-not $script:Ready) {\r\n+    BeforeAll {\r\n+        Import-Module (Join-Path $PSScriptRoot '..\\ItE2E\\ItE2E.psd1') -Force\r\n+        $script:fixtureLog = Join-Path $env:TEMP \"ite2e-yolo-permission-$([guid]::NewGuid().ToString('N')).log\"\r\n+        $fixture = (Resolve-Path (Join-Path $PSScriptRoot '..\\fixtures\\Mock-AcpPermissionAgent.ps1')).Path\r\n+        if ($fixture -match '\\s' -or $script:fixtureLog -match '\\s') {\r\n+            throw 'The custom ACP fixture requires whitespace-free test paths'\r\n+        }\r\n+        $fixtureCommand = \"pwsh -NoProfile -File $fixture -LogPath $script:fixtureLog\"\r\n+        $script:app = Start-Terminal -Package Dev -PassFre $true -Settings @{\r\n+            acpAgent = 'custom:yolo-permission-fixture'\r\n+            acpCustomCommand = $fixtureCommand\r\n+            'agentPane.yoloMode' = $true\r\n+        }\r\n+        Open-AgentPane -App $script:app | Out-Null\r\n+        Wait-AgentReady -App $script:app -TimeoutSec 60 | Should -BeTrue\r\n+        $shellPane = Get-ActivePane -App $script:app\r\n+        $script:agentPane = (Wait-NewAgentPaneSession -App $script:app -OwnerPaneSessionId $shellPane.session_id -TimeoutSec 30).PaneSessionId\r\n+    }\r\n+    AfterAll {\r\n+        if ($script:app) { Stop-Terminal -App $script:app }\r\n+        Remove-Item -LiteralPath $script:fixtureLog -Force -ErrorAction SilentlyContinue\r\n+    }\r\n+\r\n+    It 'Yolo never answers ACP permissions' {\r\n+        Assert-Setting -App $script:app -Key 'agentPane.yoloMode' -Value $true\r\n+        $marker = 'PERM' + [guid]::NewGuid().ToString('N').Substring(0, 12)\r\n+        Send-AgentPrompt -App $script:app -PaneSessionId $script:agentPane -Text $marker | Out-Null\r\n+\r\n+        (Wait-AgentPermission -App $script:app -TimeoutSec 30) |\r\n+            Should -BeTrue -Because 'the provider permission must remain pending for the user'\r\n+        $before = if (Test-Path $script:fixtureLog) {\r\n+            Get-Content -LiteralPath $script:fixtureLog -Raw\r\n+        } else { '' }\r\n+        $before | Should -Match \"permission-requested\\|$marker\"\r\n+        $before | Should -Not -Match \"permission-resolved\\|.*\\|$marker\"\r\n+\r\n+        Send-AgentKey -App $script:app -PaneSessionId $script:agentPane -Key Y | Out-Null\r\n+        (Test-Until -TimeoutSec 20 -IntervalSec 0.5 -Condition {\r\n+            (Get-Content -LiteralPath $script:fixtureLog -Raw -ErrorAction SilentlyContinue) -match\r\n+                \"permission-resolved\\|allow-once\\|$marker\"\r\n+        }) | Should -BeTrue -Because 'only the explicit Y key should select AllowOnce'\r\n+        Assert-AgentPaneText -App $script:app -PaneSessionId $script:agentPane `\r\n+            -Pattern \"PERMISSION_RESULT_${marker}_allow-once\" -TimeoutSec 20\r\n+    }\r\n+}\r\n+\r\n+Describe 'Feature provider-native Yolo with Copilot' -Tag 'Feature' -Skip:(-not $script:Ready) {\r\n+    BeforeAll {\r\n+        Import-Module (Join-Path $PSScriptRoot '..\\ItE2E\\ItE2E.psd1') -Force\r\n+    }\r\n+\r\n+    It 'Yolo setting persists' -Skip:(-not $script:copilotReady) {\r\n+        $app = Start-Terminal -Package Dev -PassFre $true -Settings @{\r\n+            acpAgent = 'copilot'\r\n+            'agentPane.yoloMode' = $true\r\n+        }\r\n+        try {\r\n+            Assert-Setting -App $app -Key 'agentPane.yoloMode' -Value $true\r\n+        }\r\n+        finally {\r\n+            if ($app) { Stop-Terminal -App $app }\r\n+        }\r\n+    }\r\n+\r\n+    It 'Provider-native Yolo toggles per live session' -Skip:(-not $script:copilotReady) {\r\n+        $app = Start-Terminal -Package Dev -PassFre $true -Settings @{\r\n+            acpAgent = 'copilot'\r\n+            'agentPane.yoloMode' = $true\r\n+        }\r\n+        try {\r\n+            Open-AgentPane -App $app | Out-Null\r\n+            Wait-AgentReady -App $app -TimeoutSec 90 | Should -BeTrue\r\n+            $shellPane = Get-ActivePane -App $app\r\n+            $agentPane = (Wait-NewAgentPaneSession -App $app -OwnerPaneSessionId $shellPane.session_id -TimeoutSec 30).PaneSessionId\r\n+\r\n+            Initialize-LogOffsets -App $app | Out-Null\r\n+            Send-AgentPrompt -App $app -PaneSessionId $agentPane -Text '/yolo off' | Out-Null\r\n+            Assert-Log -App $app -Name 'wta-main_helper-*.log' `\r\n+                -Pattern 'provider-native Yolo updated for live session.*enabled=false' -TimeoutSec 30\r\n+            Initialize-LogOffsets -App $app | Out-Null\r\n+            Send-AgentPrompt -App $app -PaneSessionId $agentPane -Text '/yolo on' | Out-Null\r\n+            Assert-Log -App $app -Name 'wta-main_helper-*.log' `\r\n+                -Pattern 'provider-native Yolo updated for live session.*enabled=true' -TimeoutSec 30\r\n+        }\r\n+        finally {\r\n+            if ($app) { Stop-Terminal -App $app }\r\n+        }\r\n+    }\r\n+\r\n+}\r\n+\r\n+Describe 'Feature unsupported provider Yolo behavior' -Tag 'Feature' -Skip:(-not $script:Ready) {\r\n+    BeforeAll {\r\n+        Import-Module (Join-Path $PSScriptRoot '..\\ItE2E\\ItE2E.psd1') -Force\r\n+    }\r\n+\r\n+    It 'Unsupported agents reject Yolo safely' -Skip:(-not $script:openCodeReady) {\r\n+        $app = Start-Terminal -Package Dev -PassFre $true -Settings @{ acpAgent = 'opencode' }\r\n+        try {\r\n+            Open-AgentPane -App $app | Out-Null\r\n+            Wait-AgentReady -App $app -TimeoutSec 90 | Should -BeTrue\r\n+            $shellPane = Get-ActivePane -App $app\r\n+            $agentPane = (Wait-NewAgentPaneSession -App $app -OwnerPaneSessionId $shellPane.session_id -TimeoutSec 30).PaneSessionId\r\n+            Send-AgentPrompt -App $app -PaneSessionId $agentPane -Text '/yolo on' | Out-Null\r\n+            Assert-AgentPaneText -App $app -PaneSessionId $agentPane `\r\n+                -Pattern '(?i)/yolo on: opencode does not support ACP session Yolo mode' -TimeoutSec 30\r\n+        }\r\n+        finally {\r\n+            if ($app) { Stop-Terminal -App $app }\r\n+        }\r\n+    }\r\n+}\r\n+\r\n+Describe 'Feature AllowYoloMode policy' -Tag 'Feature' -Skip:(-not $script:Ready) {\r\n+    BeforeAll {\r\n+        Import-Module (Join-Path $PSScriptRoot '..\\ItE2E\\ItE2E.psd1') -Force\r\n+    }\r\n+\r\n+    It 'AllowYoloMode policy blocks Yolo' -Skip:(-not $script:policyReady) {\r\n+        $prior = Set-WtAgentPolicy -Policy @{ AllowYoloMode = 'Blocked' }\r\n+        $app = $null\r\n+        try {\r\n+            $app = Start-Terminal -Package Dev -PassFre $true -Settings @{\r\n+                acpAgent = 'copilot'\r\n+                'agentPane.yoloMode' = $true\r\n+            }\r"
+      }
+    ]
+  },
+  {
+    "group": 21,
+    "body": "This new slash-menu summary is still English in the Amharic catalog, so Amharic users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 21,
+        "threadId": "PRRT_kwDOSgzUZs6cwyrH",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870421599",
+        "path": "tools/wta/locales/am-ET.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:18Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"የኤጅንት መቀያየር ከWindows Ter\n commands.model.summary: \"ለዚህ ፓነል ሞዴሉን ይምረጡ (በቀጥታ ለመቀየር /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"የዚህን ኤጀንት ክፍለ-ጊዜ ያዋቅሩ\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"የዚህን ትር ኤጅንት ገጽታ ያንቀሳቅሱ (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 25,
+    "body": "This new slash-menu summary is still English in the Malayalam catalog, so Malayalam users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 25,
+        "threadId": "PRRT_kwDOSgzUZs6cwytR",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870421785",
+        "path": "tools/wta/locales/ml-IN.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:19Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"വിൻഡോസ് ടെർമിനൽ \n commands.model.summary: \"ഈ പേനിനായി മോഡൽ തിരഞ്ഞെടുക്കുക (നേരിട്ട് മാറാൻ /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"ഈ ഏജന്റ് സെഷൻ കോൺഫിഗർ ചെയ്യുക\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"ഈ ടാബിന്റെ ഏജന്റ് പേൻ നീക്കുക (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 29,
+    "body": "This new slash-menu summary is still English in the Māori catalog, so Māori users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 29,
+        "threadId": "PRRT_kwDOSgzUZs6cwyu4",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870421950",
+        "path": "tools/wta/locales/mi-NZ.yml",
+        "line": null,
+        "originalLine": 232,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:21Z",
+        "diffHunk": "@@ -227,6 +229,8 @@ system.agent_switch_unavailable: \"Kāore i te wātea te whakawhiti māngai i wah\n commands.model.summary: \"Kōwhiria te tauira mō tēnei papa (/model <id> ki te huri tika)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Whirihorahia tēnei teho māngai\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Neke i te papa agent o tēnei ripa (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 33,
+    "body": "This new slash-menu summary is still English in the Traditional Chinese catalog, so users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 33,
+        "threadId": "PRRT_kwDOSgzUZs6cwywX",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870422101",
+        "path": "tools/wta/locales/zh-TW.yml",
+        "line": null,
+        "originalLine": 228,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:23Z",
+        "diffHunk": "@@ -223,6 +225,8 @@ system.agent_switch_unavailable: \"在 Windows Terminal 分頁之外，無法切\n commands.model.summary: \"為此窗格選擇模型（使用 /model <id> 可直接切換）\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"設定此智能體工作階段\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"移動此分頁的智能體窗格 (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 37,
+    "body": "This new slash-menu summary is still English in the Catalan catalog, so Catalan users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 37,
+        "threadId": "PRRT_kwDOSgzUZs6cwyx5",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870422250",
+        "path": "tools/wta/locales/ca-ES.yml",
+        "line": null,
+        "originalLine": 235,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:24Z",
+        "diffHunk": "@@ -230,6 +232,8 @@ system.agent_switch_unavailable: \"La commutació d'agent no està disponible for\n commands.model.summary: \"Trieu el model per a aquest tauler (/model <id> per canviar directament)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Configureu aquesta sessió de l’agent\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Mou el tauler d'agent d'aquesta pestanya (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 41,
+    "body": "This new slash-menu summary is still English in the Lithuanian catalog, so Lithuanian users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 41,
+        "threadId": "PRRT_kwDOSgzUZs6cwyz0",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870422426",
+        "path": "tools/wta/locales/lt-LT.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:25Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"Agento perjungimas nepasiekiamas už „Window\n commands.model.summary: \"Pasirinkite šios srities modelį (/model <id> norėdami perjungti tiesiogiai)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Konfigūruoti šią agento sesiją\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Perkelti šios kortelės agento skydelį (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 45,
+    "body": "This new slash-menu summary is still English in the Hebrew catalog, so Hebrew users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 45,
+        "threadId": "PRRT_kwDOSgzUZs6cwy1S",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870422567",
+        "path": "tools/wta/locales/he-IL.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:27Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"מעבר בין סוכנים אינו זמין\n commands.model.summary: \"בחר את המודל עבור חלונית זו (/model <id> למעבר ישיר)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"קבע את תצורת הפעלה זו של הסוכן\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"העבר את חלונית הסוכן של כרטיסייה זו (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 49,
+    "body": "This new slash-menu summary is still English in the Galician catalog, so Galician users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 49,
+        "threadId": "PRRT_kwDOSgzUZs6cwy3c",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870422757",
+        "path": "tools/wta/locales/gl-ES.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:29Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"O cambio de axente non está dispoñible fóra\n commands.model.summary: \"Escolla o modelo para este panel (/model <id> para cambiar directamente)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Configurar esta sesión do agente\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Mover o panel de axente desta pestana (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 53,
+    "body": "This new slash-menu summary is still English in the Croatian catalog, so Croatian users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 53,
+        "threadId": "PRRT_kwDOSgzUZs6cwy5S",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870422924",
+        "path": "tools/wta/locales/hr-HR.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:30Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"Prebacivanje agenata nije dostupno izvan karti\n commands.model.summary: \"Odaberite model za ovo okno (/model <id> za izravno prebacivanje)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Konfigurirajte ovu sesiju agenta\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Premjesti okno agenta ove kartice (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 57,
+    "body": "This new slash-menu summary is still English in the Lao catalog, so Lao users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 57,
+        "threadId": "PRRT_kwDOSgzUZs6cwy7u",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870423148",
+        "path": "tools/wta/locales/lo-LA.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:32Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"ການສະຫຼັບຕົວແທນ\n commands.model.summary: \"ເລືອກແບບຈຳລອງສຳລັບ pane ນີ້ (/model <id> ເພື່ອປ່ຽນໂດຍກົງ)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"ກຳນົດຄ່າເຊດຊັນຕົວແທນນີ້\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"ຍ້າຍແຜງຕົວແທນຂອງແທັບນີ້ (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 61,
+    "body": "This new slash-menu summary is still English in the Assamese catalog, so Assamese users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 61,
+        "threadId": "PRRT_kwDOSgzUZs6cwy9T",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870423311",
+        "path": "tools/wta/locales/as-IN.yml",
+        "line": null,
+        "originalLine": 236,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:33Z",
+        "diffHunk": "@@ -231,6 +233,8 @@ system.agent_switch_unavailable: \"উইণ্ড’জ টাৰ্মিনে\n commands.model.summary: \"এই পেনৰ বাবে মডেল বাছনি কৰক (পোনপটীয়াকৈ সলাবলৈ /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"এই এজেণ্ট ছিচেন কনফিগাৰ কৰক\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"এই টেবৰ এজেণ্ট পেন স্থানান্তৰ কৰক (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 65,
+    "body": "This new slash-menu summary is still English in the Icelandic catalog, so Icelandic users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 65,
+        "threadId": "PRRT_kwDOSgzUZs6cwy_N",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870423481",
+        "path": "tools/wta/locales/is-IS.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:35Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"Ekki er hægt að skipta um fulltrúa utan Win\n commands.model.summary: \"Veldu líkanið fyrir þetta spjald (/model <id> til að skipta beint)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Stilla þessa fulltrúaotu\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Færa agentspjald þessa flipa (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 69,
+    "body": "This new slash-menu summary is still English in the Greek catalog, so Greek users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 69,
+        "threadId": "PRRT_kwDOSgzUZs6cwzBk",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870423705",
+        "path": "tools/wta/locales/el-GR.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:36Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"Η εναλλαγή πρακτόρων δεν\n commands.model.summary: \"Επιλέξτε το μοντέλο για αυτό το πλαίσιο (/model <id> για άμεση εναλλαγή)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Διαμόρφωση αυτής της περιόδου λειτουργίας παράγοντα\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Μετακίνηση του πλαισίου παράγοντα αυτής της καρτέλας (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 73,
+    "body": "This new slash-menu summary is still English in the Nepali catalog, so Nepali users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 73,
+        "threadId": "PRRT_kwDOSgzUZs6cwzD2",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870423916",
+        "path": "tools/wta/locales/ne-NP.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:38Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"विन्डोज टर्मिनल \n commands.model.summary: \"यो पेनका लागि मोडेल छान्नुहोस् (सिधै बदल्न /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"यो एजेन्ट सत्र कन्फिगर गर्नुहोस्\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"यो ट्याबको एजेन्ट पेन सार्नुहोस् (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 77,
+    "body": "This new slash-menu summary is still English in the Filipino catalog, so Filipino users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 77,
+        "threadId": "PRRT_kwDOSgzUZs6cwzF0",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870424092",
+        "path": "tools/wta/locales/fil-PH.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:39Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"Hindi available ang paglipat ng agent sa labas\n commands.model.summary: \"Piliin ang modelo para sa pane na ito (/model <id> para magpalit nang diretso)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"I-configure ang session ng agent na ito\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Ilipat ang agent pane ng tab na ito (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 81,
+    "body": "This new slash-menu summary is still English in the Punjabi catalog, so Punjabi users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 81,
+        "threadId": "PRRT_kwDOSgzUZs6cwzHm",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870424271",
+        "path": "tools/wta/locales/pa-IN.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:41Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"ਵਿੰਡੋਜ਼ ਟਰਮੀਨਲ ਟ\n commands.model.summary: \"ਇਸ ਪੈਨ ਲਈ ਮਾਡਲ ਚੁਣੋ (ਸਿੱਧਾ ਬਦਲਣ ਲਈ /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"ਇਸ ਏਜੰਟ ਸੈਸ਼ਨ ਨੂੰ ਸੰਰਚਿਤ ਕਰੋ\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"ਇਸ ਟੈബ ਦੇ ਏਜੰट ਪੈਨ ਨੂੰ ਹਿਲਾਓ (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 85,
+    "body": "This new slash-menu summary is still English in the Welsh catalog, so Welsh users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 85,
+        "threadId": "PRRT_kwDOSgzUZs6cwzJh",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870424442",
+        "path": "tools/wta/locales/cy-GB.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:42Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"Nid yw newid asiant ar gael y tu allan i dab W\n commands.model.summary: \"Dewiswch y model ar gyfer y paen hwn (/model <id> i newid yn uniongyrchol)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Ffurfweddu sesiwn yr asiant hwn\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Symud paen asiant y tab hwn (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 89,
+    "body": "This new slash-menu summary is still English in the Odia catalog, so Odia users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 89,
+        "threadId": "PRRT_kwDOSgzUZs6cwzLG",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870424601",
+        "path": "tools/wta/locales/or-IN.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:44Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"ୱିଣ୍ଡୋଜ୍ ଟର୍ମିନା\n commands.model.summary: \"ଏହି ପେନ୍ ପାଇଁ ମଡେଲ ବାଛନ୍ତୁ (ସିଧାସଳଖ ବଦଳାଇବାକୁ /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"ଏହି ଏଜେଣ୍ଟ୍ ସେସନ୍ କନ୍ଫିଗର୍ କରନ୍ତୁ\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"ଏହି ଟ୍ୟାବ୍‌ର ଏଜେଣ୍ଟ୍ ପେନ୍‌କୁ ସ୍ଥានାନ୍ତର କରନ୍ତୁ (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 93,
+    "body": "This new slash-menu summary is still English in the Telugu catalog, so Telugu users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 93,
+        "threadId": "PRRT_kwDOSgzUZs6cwzMq",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870424751",
+        "path": "tools/wta/locales/te-IN.yml",
+        "line": null,
+        "originalLine": 234,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:45Z",
+        "diffHunk": "@@ -229,6 +231,8 @@ system.agent_switch_unavailable: \"Windows Terminal ట్యాబ్ వెల\n commands.model.summary: \"ఈ పేన్ కోసం మోడల్‌ను ఎంచుకోండి (నేరుగా మార్చడానికి /model <id>)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"ఈ ఏజెంట్ సెషన్‌ను కాన్ఫిගర్ చేయండి\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"ఈ ట్యాబ్ యొక్క ఏజెంట్ పేన్‌ను తరలించండి (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 97,
+    "body": "This new slash-menu summary is still English in the European Portuguese catalog, so users see an untranslated entry. New en-US keys must be translated in every locale (`.github/instructions/rust-localization.instructions.md:34-40,166-168`).",
+    "members": [
+      {
+        "index": 97,
+        "threadId": "PRRT_kwDOSgzUZs6cwzOo",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3870424950",
+        "path": "tools/wta/locales/pt-PT.yml",
+        "line": null,
+        "originalLine": 233,
+        "isOutdated": true,
+        "viewerCanResolve": true,
+        "reviewedCommit": "11c659f607d21e609cd1a0ea0c09c196b8c53e87",
+        "originalCommit": "7c2159003085e60637ec7268f36c8da2e849f69b",
+        "createdAt": "2026-08-27T09:23:47Z",
+        "diffHunk": "@@ -228,6 +230,8 @@ system.agent_switch_unavailable: \"A alternância de agente não está disponíve\n commands.model.summary: \"Escolha o modelo para este painel (/model <id> para mudar diretamente)\"  # {Locked=\"/model\",\"<id>\"}\n commands.config.summary: \"Configurar esta sessão do agente\"  # Agent means an AI coding agent; shown for the /config command. {Locked=\"/config\"}\n commands.move.summary: \"Mover o painel do agente deste separador (/move <position>)\"  # {Locked=\"/move\",\"<position>\"}\n+commands.yolo.summary: \"Use the provider's ACP Yolo mode for this session (until /new)\"  # {Locked=\"ACP\",\"Yolo\",\"/yolo\",\"/new\"} — slash-command names."
+      }
+    ]
+  },
+  {
+    "group": 101,
+    "body": "The lazy-session operation can apply a stale enable after a settings/GPO update. If `agent_config_changed` was queued before `SessionAttached` but is handled while this awaited RPC is in flight, the App sees no bound session and schedules no replacement operation; this task then completes the old enable and proceeds to the prompt even though the shared effective state is now off. Re-read the effective state after the RPC and synchronously apply any changed desired value (failing closed on disable failure) before allowing the first prompt.",
+    "members": [
+      {
+        "index": 101,
+        "threadId": "PRRT_kwDOSgzUZs6d81jx",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3900298212",
+        "path": "tools/wta/src/protocol/acp/client.rs",
+        "line": 4845,
+        "originalLine": 4828,
+        "isOutdated": false,
+        "viewerCanResolve": true,
+        "reviewedCommit": "17bc4828231169ede2e67fdfa66f8b5fab8c5b9f",
+        "originalCommit": "c9d353000701c49b12fcd67f047be2e4c550639e",
+        "createdAt": "2026-09-01T02:45:07Z",
+        "diffHunk": "@@ -4481,15 +4808,71 @@ async fn dispatch_prompt_body(\n             });\n             publish_session_config_options(\n                 &event_tx_task,\n+                &client_task.state.native_yolo,\n                 &new_sid,\n                 new_session.config_options.as_deref(),\n             );\n             g.insert(tab_key_task.clone(), new_sid.clone());\n-            new_sid\n+            (new_sid, Some((enabled, yolo_operation)))\n         }\n     };\n     let prompt_session_id_str = prompt_session_id.to_string();\n \n+    if let Some((enabled, operation)) = lazy_yolo_operation {\n+        let yolo_result = apply_native_yolo_checked(\n+            &conn_task,\n+            &client_task.state,\n+            operation.clone(),\n+            super::native_yolo::NATIVE_YOLO_RPC_TIMEOUT,\n+        )\n+        .await;"
+      }
+    ]
+  },
+  {
+    "group": 105,
+    "body": "Passing the broad `Software\\Policies\\Microsoft` key means this recursive watcher fires for policy changes belonging to every Microsoft product, causing unnecessary full settings reloads. Pass `PolicyRegKey` instead; `CreatePolicyChangeWatcher` already falls back to the deepest existing ancestor when the product key does not exist.",
+    "members": [
+      {
+        "index": 105,
+        "threadId": "PRRT_kwDOSgzUZs6ehgbe",
+        "url": "https://github.com/microsoft/intelligent-terminal/pull/505#discussion_r3914673212",
+        "path": "src/cascadia/inc/AgentPolicy.h",
+        "line": 135,
+        "originalLine": 135,
+        "isOutdated": false,
+        "viewerCanResolve": true,
+        "reviewedCommit": "17bc4828231169ede2e67fdfa66f8b5fab8c5b9f",
+        "originalCommit": "acbd86ef64c199e6788c3ab36f0b1d567cf1dfa8",
+        "createdAt": "2026-09-02T13:37:01Z",
+        "diffHunk": "@@ -62,11 +66,74 @@ namespace Microsoft::Terminal::Settings::Model::AgentPolicy\n         PolicyState customAgents{ PolicyState::NotConfigured };\r\n         PolicyState autoFix{ PolicyState::NotConfigured };\r\n         PolicyState agentSessionHooks{ PolicyState::NotConfigured };\r\n+        PolicyState yoloMode{ PolicyState::NotConfigured };\r\n     };\r\n \r\n     // ── Private implementation details ──────────────────────────────────\r\n \r\n     inline constexpr wchar_t PolicyRegKey[] = LR\"(Software\\Policies\\Microsoft\\IntelligentTerminal)\";\r\n+    inline constexpr wchar_t PolicyWatchRegKey[] = LR\"(Software\\Policies\\Microsoft)\";\r\n+\r\n+    namespace details\r\n+    {\r\n+        inline wil::unique_registry_watcher_nothrow CreatePolicyChangeWatcher(\r\n+            wil::unique_hkey&& key,\r\n+            const bool recursive,\r\n+            wistd::function<void(wil::RegistryChangeKind)>&& callback) noexcept\r\n+        {\r\n+            return wil::make_registry_watcher_nothrow(\r\n+                std::move(key),\r\n+                recursive,\r\n+                std::move(callback));\r\n+        }\r\n+\r\n+        inline wil::unique_registry_watcher_nothrow CreatePolicyChangeWatcher(\r\n+            wil::unique_hkey&& key,\r\n+            wistd::function<void(wil::RegistryChangeKind)>&& callback) noexcept\r\n+        {\r\n+            return CreatePolicyChangeWatcher(std::move(key), true, std::move(callback));\r\n+        }\r\n+\r\n+        inline wil::unique_registry_watcher_nothrow CreatePolicyChangeWatcher(\r\n+            HKEY root,\r\n+            const std::wstring_view targetPath,\r\n+            wistd::function<void(wil::RegistryChangeKind)>&& callback) noexcept\r\n+        {\r\n+            std::wstring candidate{ targetPath };\r\n+            for (;;)\r\n+            {\r\n+                wil::unique_hkey key;\r\n+                if (RegOpenKeyExW(root, candidate.c_str(), 0, KEY_NOTIFY, &key) == ERROR_SUCCESS)\r\n+                {\r\n+                    return CreatePolicyChangeWatcher(\r\n+                        std::move(key),\r\n+                        candidate.size() == targetPath.size(),\r\n+                        std::move(callback));\r\n+                }\r\n+                if (candidate.empty())\r\n+                {\r\n+                    return {};\r\n+                }\r\n+\r\n+                const auto separator = candidate.find_last_of(L'\\\\');\r\n+                if (separator == std::wstring::npos)\r\n+                {\r\n+                    candidate.clear();\r\n+                }\r\n+                else\r\n+                {\r\n+                    candidate.resize(separator);\r\n+                }\r\n+            }\r\n+        }\r\n+    }\r\n+\r\n+    inline wil::unique_registry_watcher_nothrow CreatePolicyChangeWatcher(\r\n+        HKEY root,\r\n+        wistd::function<void(wil::RegistryChangeKind)>&& callback) noexcept\r\n+    {\r\n+        return details::CreatePolicyChangeWatcher(root, PolicyWatchRegKey, std::move(callback));\r"
+      }
+    ]
+  }
+]

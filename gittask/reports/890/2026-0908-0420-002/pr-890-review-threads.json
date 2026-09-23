@@ -1,0 +1,53 @@
+{
+  "pullRequest": 890,
+  "headRefOid": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+  "totalThreads": 5,
+  "unresolvedThreads": 1,
+  "threads": [
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9LP",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953894851",
+      "path": "tools/wta/src/app_events.rs",
+      "line": 284,
+      "isResolved": false,
+      "isOutdated": false,
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "decision": "won't fix",
+      "reply": null,
+      "reason": "The author explicitly declined a production change and left the thread for human review. Production key paths clear the close arm before input selection, and commit 55ab0340b5396e505ed888df4d9ae8e1a87e848a adds an event-driven regression for the reachable arm/type/select/copy-failure sequence."
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9iV",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897044",
+      "isResolved": true,
+      "isOutdated": true,
+      "fixCommit": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9ir",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897068",
+      "isResolved": true,
+      "isOutdated": true,
+      "fixCommit": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9i3",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897084",
+      "isResolved": true,
+      "isOutdated": true,
+      "fixCommit": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9jA",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953897097",
+      "isResolved": true,
+      "isOutdated": true,
+      "fixCommit": "55ab0340b5396e505ed888df4d9ae8e1a87e848a",
+      "actionByThisRun": null
+    }
+  ]
+}
+

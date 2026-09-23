@@ -1,0 +1,22 @@
+PR: 923
+Worktree: C:\ado\gittask\code\intelligent-terminal-923
+Local branch: 923
+
+Initial state:
+- Main repository clean: yes
+- Local branch 923 did not exist.
+- PR worktree did not exist.
+
+Creation:
+- Fetched refs/pull/923/head into local branch 923.
+- Created C:\ado\gittask\code\intelligent-terminal-923.
+- Initial head: 85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01
+
+Final refresh:
+- Fetched refs/pull/923/head inside the PR worktree.
+- Fast-forward result: Already up to date.
+
+Final state:
+- Head: 85d8ccb0d4e7ea2e662fbf16a10cc12ee0498f01
+- PR worktree clean: yes
+

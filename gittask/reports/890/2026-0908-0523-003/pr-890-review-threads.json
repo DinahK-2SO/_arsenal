@@ -1,0 +1,44 @@
+{
+  "pullRequest": 890,
+  "headRefOid": "69727d8f0b52943529bac3fd770910321edae8a7",
+  "totalThreads": 5,
+  "unresolvedThreads": 0,
+  "threads": [
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9LP",
+      "commentUrl": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3953894851",
+      "path": "tools/wta/src/app_events.rs",
+      "originalCommit": "026e45ae2424c7cf6ffbe069bbfe4ee20dd72d75",
+      "fixCommit": "325dc9f27b227b5e9a011f36f264ceacccda3066",
+      "decision": "resolved",
+      "replyUrl": "https://github.com/microsoft/intelligent-terminal/pull/890#discussion_r3954598963",
+      "reply": "Fixed in 325dc9f27b227b5e9a011f36f264ceacccda3066, `copy_input_selection` now clears `close_pane_armed_at` on the common handled path, so both successful and failed copy/cut operations disarm pane closure while unhandled events preserve existing Ctrl+C behavior.",
+      "isResolved": true
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9iV",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9ir",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9i3",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    },
+    {
+      "id": "PRRT_kwDOSgzUZs6gE9jA",
+      "isResolved": true,
+      "isOutdated": true,
+      "actionByThisRun": null
+    }
+  ]
+}
+

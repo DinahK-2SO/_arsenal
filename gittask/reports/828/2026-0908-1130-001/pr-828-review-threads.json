@@ -1,0 +1,20 @@
+{
+  "pullRequest": 828,
+  "headRefOid": "12536255734f950e89aff2d138b3df2ad9cb29e6",
+  "totalThreads": 19,
+  "resolvedThreads": 18,
+  "unresolvedThreads": 1,
+  "unresolved": [
+    {
+      "id": "PRRT_kwDOSgzUZs6fE1BE",
+      "url": "https://github.com/microsoft/intelligent-terminal/pull/828#discussion_r3928605642",
+      "path": "src/cascadia/TerminalApp/TerminalPage.cpp",
+      "line": 2100,
+      "originalCommit": "d9071588ac4d1f0d9744c6f7f63c7b544f590a62",
+      "decision": "won't fix",
+      "reply": null,
+      "reason": "The author explicitly defined profile backend, saved-layout restore, historical resume, and other non-/agent override owners as an intentional compatibility boundary. The current resolver, TestDefaultProviderYoloInheritance, and doc/specs/Yolo-mode.md preserve and document that scope."
+    }
+  ]
+}
+
