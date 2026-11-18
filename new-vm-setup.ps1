@@ -1,3 +1,28 @@
+#Requires -RunAsAdministrator
+<#
+.SYNOPSIS
+Installs development tools and configures the Windows 11 taskbar and input language.
+
+.DESCRIPTION
+- Align left
+- Show the Search box; hide Task View / Chat
+- Attempt to disable Widgets (including taskbar weather) for all users
+- Keep only: Explorer, Windows Terminal (release), Edge, VS Code, Visual Studio 2026 (in that order)
+- Remove other pinned apps (best effort for current user)
+- Add Simplified Chinese with Microsoft Pinyin for the current user
+
+.PARAMETER RequireWidgetsPolicy
+Stop if Windows denies access to the machine-wide Widgets policy. By default,
+report the denial and continue with the other setup steps.
+
+.NOTES
+- Supported model for taskbar pinning in Windows 11 is XML-based layout.
+- Apply the XML through the current user's Start Layout policy, then reset pins.
+- Sign out and sign back in to apply the layout. Policy refresh can restore pins
+    that you manually unpin; organization policies may override these settings.
+#>
+param([switch]$RequireWidgetsPolicy)
+
 function Install-WingetPackage {
     param(
         [Parameter(Mandatory=$true)][string]$Id,
@@ -205,24 +230,6 @@ Install-WingetPackage -Id "Microsoft.PowerToys"
 
 
 
-#Requires -RunAsAdministrator
-<#
-.SYNOPSIS
-Configures Windows 11 taskbar:
-- Align left
-- Show the Search box; hide Task View / Chat / Widgets
-- Disable Widgets (including taskbar weather) for all users
-- Keep only: Explorer, Windows Terminal (release), Edge, VS Code, Visual Studio 2026 (in that order)
-- Remove other pinned apps (best effort for current user)
-- Add Simplified Chinese with Microsoft Pinyin for the current user
-
-.NOTES
-- Supported model for taskbar pinning in Windows 11 is XML-based layout.
-- Apply the XML through the current user's Start Layout policy, then reset pins.
-- Sign out and sign back in to apply the layout. Policy refresh can restore pins
-    that you manually unpin; organization policies may override these settings.
-#>
-
 $ErrorActionPreference = "Stop"
 
 function Write-Info($msg) {
@@ -244,23 +251,39 @@ function Ensure-Dir([string]$path) {
     }
 }
 
-function Set-DwordValue([string]$Path, [string]$Name, [int]$Value, [switch]$Required) {
+function Set-DwordValue([string]$Path, [string]$Name, [int]$Value) {
     $PSNativeCommandUseErrorActionPreference = $false
     $registryPath = $Path -replace '^Registry::', '' -replace '^HKCU:\\', 'HKCU\' -replace '^HKLM:\\', 'HKLM\'
     $output = & reg.exe add $registryPath /v $Name /t REG_DWORD /d $Value /f 2>&1
     if ($LASTEXITCODE -ne 0) {
-        if ($Required) {
-            throw "Required registry setting '$registryPath\$Name' was not applied (reg.exe exit code $LASTEXITCODE). Check administrator elevation and organization policy. $($output -join ' ')"
-        }
         Write-Warn "Could not set '$registryPath\$Name'; continuing. $($output -join ' ')"
+    }
+}
+
+function Disable-WidgetsForAllUsers([switch]$Required) {
+    $path = "HKLM:\SOFTWARE\Policies\Microsoft\Dsh"
+    $name = "AllowNewsAndInterests"
+    try {
+        $value = $null
+        if (Test-Path -LiteralPath $path -ErrorAction Stop) {
+            $value = (Get-Item -LiteralPath $path -ErrorAction Stop).GetValue($name)
+        } else {
+            New-Item -Path $path -ErrorAction Stop | Out-Null
+        }
+        if ($value -isnot [int] -or $value -ne 0) {
+            New-ItemProperty -LiteralPath $path -Name $name -PropertyType DWord -Value 0 -Force -ErrorAction Stop | Out-Null
+            $value = Get-ItemPropertyValue -LiteralPath $path -Name $name -ErrorAction Stop
+            if ($value -isnot [int] -or $value -ne 0) {
+                throw "Could not verify '$path\$name': expected REG_DWORD 0, found '$value'."
+            }
+        }
+    } catch [System.UnauthorizedAccessException], [System.Security.SecurityException] {
+        $message = "Windows denied access to '$path\$name'. Could not confirm Widgets are disabled for all users. On a managed device, ask your administrator to disable the 'Allow widgets' policy."
+        if ($Required) { throw $message }
+        Write-Warn "$message Continuing with the remaining setup steps."
         return
     }
-    if ($Required) {
-        $actualValue = Get-ItemPropertyValue -LiteralPath $Path -Name $Name -ErrorAction Stop
-        if ($actualValue -ne $Value) {
-            throw "Required registry setting '$registryPath\$Name' could not be verified: expected $Value, found $actualValue."
-        }
-    }
+    Write-Info "Verified '$path\$name' is REG_DWORD 0 (Widgets disabled by machine policy)."
 }
 
 function Find-Shortcut {
@@ -330,7 +353,7 @@ Write-Info "VS     : $vsLink"
 # 1) Current user taskbar look
 # -----------------------------
 Write-Info "Disabling Widgets (including taskbar weather) for all users..."
-Set-DwordValue -Path "HKLM:\SOFTWARE\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Value 0 -Required
+Disable-WidgetsForAllUsers -Required:$RequireWidgetsPolicy
 
 Write-Info "Setting taskbar alignment and built-in taskbar items for current user..."
 
@@ -493,4 +516,3 @@ Write-Host ""
 Write-Host "Done." -ForegroundColor Green
 Write-Host "Sign out and sign back in to apply: Search box, File Explorer, Windows Terminal (release), Edge, VS Code, Visual Studio 2026." -ForegroundColor Green
 Write-Warn "The Start Layout policy remains enabled and may restore these pins on policy refresh. Organization policies may override it."
-
