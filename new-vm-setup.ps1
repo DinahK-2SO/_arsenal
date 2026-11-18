@@ -4,6 +4,7 @@
 Installs development tools and configures Windows 11 appearance, taskbar, and input language.
 
 .DESCRIPTION
+- Configure the current user's Vim to show line numbers and indent with four spaces
 - Set Windows and apps to Dark mode with a manual accent for the current user
 - Align left
 - Show the Search box; hide Task View / Chat
@@ -190,6 +191,56 @@ function Add-PathDirectory {
 
     if ([string]::IsNullOrWhiteSpace($Path)) { return $Directory }
     return "$($Path.TrimEnd(';'));$Directory"
+}
+
+function Set-VimPreferences {
+    if ($env:VIMINIT) { throw "VIMINIT overrides the user vimrc. No Vim configuration was changed." }
+    $vimHome = if ($env:HOME) { [Environment]::ExpandEnvironmentVariables($env:HOME) } else { $env:USERPROFILE }
+    if (-not $vimHome -or -not (Test-Path -LiteralPath $vimHome -PathType Container)) {
+        throw "Cannot locate Vim's user home directory."
+    }
+    $vimHome = Convert-Path -LiteralPath $vimHome
+
+    $vimrc = Join-Path $vimHome "_vimrc"
+    foreach ($name in "_vimrc", ".vimrc", "vimfiles\vimrc") {
+        $candidate = Join-Path $vimHome $name
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) { $vimrc = $candidate; break }
+    }
+
+    $settings = "set number expandtab tabstop=4 shiftwidth=4 softtabstop=4"
+    $encoding = [Text.UTF8Encoding]::new($false)
+    $newline = [Environment]::NewLine
+    $prefix = ""
+    if (Test-Path -LiteralPath $vimrc -PathType Leaf) {
+        # Append ASCII commands without rewriting user text; honor a BOM if present.
+        $reader = [IO.StreamReader]::new($vimrc, $encoding, $true)
+        try {
+            $text = $reader.ReadToEnd()
+            $encoding = $reader.CurrentEncoding
+        } finally { $reader.Dispose() }
+        if (($text.TrimEnd() -split '\r\n|\n|\r')[-1] -ceq $settings) {
+            Write-Info "Vim configuration unchanged: '$vimrc'."
+            return
+        }
+        $action = "Modified"
+        if ($text -match '\r\n|\n|\r') { $newline = $Matches[0] }
+        if ($text.Length -and $text -notmatch '[\r\n]$') { $prefix = $newline }
+    } else {
+        $action = "Created"
+        # A first personal vimrc shadows the installer's fallback vimrc or Vim's defaults.
+        $prefix = (@(
+            'let s:base = $VIM . (filereadable($VIM . "/_vimrc") ? "/_vimrc" : "/.vimrc")'
+            'if filereadable(s:base) && resolve(fnamemodify(s:base, ":p")) !=? resolve(expand("<sfile>:p"))'
+            '  execute "source " . fnameescape(s:base)'
+            'elseif exists("$EXINIT") && !empty($EXINIT)'
+            '  execute $EXINIT'
+            'elseif !exists("g:skip_defaults_vim")'
+            '  runtime defaults.vim'
+            'endif'
+        ) -join $newline) + $newline
+    }
+    [IO.File]::AppendAllText($vimrc, "$prefix$settings$newline", $encoding)
+    Write-Info "$action Vim configuration: '$vimrc'."
 }
 
 function Find-UsableGit {
@@ -545,6 +596,7 @@ if ($vimDirectory) {
     Invoke-SetupStep "Vim session PATH" {
         $env:Path = Add-PathDirectory -Path $env:Path -Directory $vimDirectory
     }
+    Invoke-SetupStep "Vim user vimrc" { Set-VimPreferences }
 }
 Invoke-SetupStep "Install Git" {
     $git = Find-UsableGit
