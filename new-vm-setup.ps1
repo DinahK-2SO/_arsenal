@@ -14,16 +14,43 @@ Installs development tools and configures Windows 11 appearance, taskbar, and in
 - Add Simplified Chinese with Microsoft Pinyin for the current user
 
 .PARAMETER RequireWidgetsPolicy
-Stop if Windows denies access to the machine-wide Widgets policy. By default,
-report the denial and continue with the other setup steps.
+Report a terminating error at the end if the Widgets policy could not be verified.
+All independent setup steps are still attempted first.
 
 .NOTES
+- Failed steps are reported as warnings and summarized at the end. Dependent
+    actions such as clearing pins are skipped if their prerequisites did not succeed.
 - Supported model for taskbar pinning in Windows 11 is XML-based layout.
 - Apply the XML through the current user's Start Layout policy, then reset pins.
 - Sign out and sign back in to apply the layout. Policy refresh can restore pins
     that you manually unpin; organization policies may override these settings.
 #>
 param([switch]$RequireWidgetsPolicy)
+
+$ErrorActionPreference = "Stop"
+$PSNativeCommandUseErrorActionPreference = $false
+$setupFailures = [System.Collections.Generic.List[string]]::new()
+
+function Write-Info($msg) {
+    Write-Host "[INFO] $msg" -ForegroundColor Cyan
+}
+
+function Write-Warn($msg) {
+    Write-Host "[WARN] $msg" -ForegroundColor Yellow
+}
+
+function Invoke-SetupStep([string]$StepName, [scriptblock]$StepAction) {
+    try {
+        & $StepAction
+    } catch {
+        $failure = "${StepName}: $($_.Exception.Message)"
+        if ($_.ErrorDetails -and $_.ErrorDetails.Message -and $_.ErrorDetails.Message -ne $_.Exception.Message) {
+            $failure += " $($_.ErrorDetails.Message)"
+        }
+        $setupFailures.Add($failure)
+        Write-Warn "$failure Continuing with the next independent step."
+    }
+}
 
 function Install-WingetPackage {
     param(
@@ -72,7 +99,7 @@ function Install-WingetPackage {
 
     $installArguments = @(
         "install", "--id", $Id, "--exact", "--source", "winget",
-        "--accept-package-agreements", "--accept-source-agreements"
+        "--accept-package-agreements", "--accept-source-agreements", "--disable-interactivity"
     )
     if ($repairMiniconda) {
         $installArguments += "--force"
@@ -158,28 +185,12 @@ function Add-PathDirectory {
     return "$($Path.TrimEnd(';'));$Directory"
 }
 
-Install-WingetPackage -Id "Microsoft.WindowsTerminal"
-
-Install-WingetPackage -Id "vim.vim"
-$vimDirectory = Find-VimDirectory
-
-# Persist Vim in the current user's PATH and make it available in this session.
-$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
-$updatedUserPath = Add-PathDirectory -Path $userPath -Directory $vimDirectory
-if ($updatedUserPath -cne $userPath) {
-    [Environment]::SetEnvironmentVariable("Path", $updatedUserPath, "User")
-}
-$env:Path = Add-PathDirectory -Path $env:Path -Directory $vimDirectory
-Write-Host "[INFO] Vim directory '$vimDirectory' is configured in the user PATH and current session." -ForegroundColor Cyan
-
-Install-WingetPackage -Id "Rustlang.Rustup"
-
 function Find-UsableGit {
     $PSNativeCommandUseErrorActionPreference = $false
     $candidates = @(
         Get-Command git.exe -CommandType Application -All -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
         Join-Path $env:ProgramFiles "Git\cmd\git.exe"
-        Join-Path ${env:ProgramFiles(x86)} "Git\cmd\git.exe"
+        if (${env:ProgramFiles(x86)}) { Join-Path ${env:ProgramFiles(x86)} "Git\cmd\git.exe" }
         Join-Path $env:LOCALAPPDATA "Programs\Git\cmd\git.exe"
     ) | Select-Object -Unique
 
@@ -199,60 +210,21 @@ function Find-UsableGit {
     return $null
 }
 
-$gitExecutable = Find-UsableGit
-if ($gitExecutable) {
-    Write-Host "[INFO] Usable Git found at $gitExecutable; skipping installation." -ForegroundColor Cyan
-}
-else {
-    Install-WingetPackage -Id "Git.Git"
-    $gitExecutable = Find-UsableGit
-    if (-not $gitExecutable) { throw "No usable Git found after installation. Check the Git installation and PATH." }
-}
-
-& $gitExecutable config --global init.defaultBranch main
-if ($LASTEXITCODE -ne 0) { throw "Could not set Git init.defaultBranch to main (exit code $LASTEXITCODE)." }
-
-Install-WingetPackage -Id "OpenJS.NodeJS.LTS"
-
-Install-WingetPackage -Id "Microsoft.PowerShell"
-
-Install-WingetPackage -Id "Microsoft.VisualStudioCode" -Override '/VERYSILENT /NORESTART /MERGETASKS="addcontextmenufiles,addcontextmenufolders,addtopath"'
-
-Install-WingetPackage -Id "Anaconda.Miniconda3" -MinicondaDirectory "C:\Miniconda" -Override "/InstallationType=AllUsers /RegisterPython=1 /S /D=C:\Miniconda"
-
-Install-WingetPackage -Id "Microsoft.DotNet.SDK.9"
-
-Install-WingetPackage -Id "Microsoft.DotNet.SDK.10"
-
-Install-WingetPackage -Id "Microsoft.NuGet"
-
-Install-WingetPackage -Id "GitHub.Copilot"
-
-Install-WingetPackage -Id "Microsoft.PowerToys"
-
-
-
-$ErrorActionPreference = "Stop"
-
-function Write-Info($msg) {
-    Write-Host "[INFO] $msg" -ForegroundColor Cyan
-}
-
 function Install-LatestIntelligentTerminal {
     $name = "Microsoft.IntelligentTerminal"
-    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/intelligent-terminal/releases/latest" -ErrorAction Stop
+    # A GitHub rate limit must not prevent a first-time installation from WinGet.
+    $installed = Get-AppxPackage -Name $name -ErrorAction Stop
+    if (-not $installed) {
+        Install-WingetPackage -Id $name
+        $installed = Get-AppxPackage -Name $name -ErrorAction Stop
+    }
+    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/intelligent-terminal/releases/latest" -TimeoutSec 30 -ErrorAction Stop
     $bundles = @($release.assets | Where-Object { $_.name -match '^Microsoft\.IntelligentTerminal_\d+\.\d+\.\d+\.\d+_8wekyb3d8bbwe\.msixbundle$' })
     if ($bundles.Count -ne 1) {
         throw "Expected one official Intelligent Terminal MSIX bundle in release '$($release.tag_name)'; found $($bundles.Count)."
     }
     $bundle = $bundles[0]
     $latest = [version]($bundle.name.Split('_')[1])
-    $installed = Get-AppxPackage -Name $name -ErrorAction Stop
-    if (-not $installed) {
-        # WinGet installs the architecture-appropriate framework dependencies on a fresh VM.
-        Install-WingetPackage -Id $name
-        $installed = Get-AppxPackage -Name $name -ErrorAction Stop
-    }
     if ($installed -and [version]$installed.Version -ge $latest) {
         Write-Info "Intelligent Terminal $($installed.Version) is installed (latest release: $latest)."
         return
@@ -278,10 +250,6 @@ function Install-LatestIntelligentTerminal {
     Write-Info "Verified Intelligent Terminal $($installed.Version) for the current user."
 }
 
-function Write-Warn($msg) {
-    Write-Host "[WARN] $msg" -ForegroundColor Yellow
-}
-
 function Escape-XmlAttr([string]$s) {
     if ($null -eq $s) { return $null }
     return $s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace('"', "&quot;").Replace("'", "&apos;")
@@ -293,12 +261,10 @@ function Ensure-Dir([string]$path) {
     }
 }
 
-function Set-DwordValue([string]$Path, [string]$Name, [int]$Value) {
-    $PSNativeCommandUseErrorActionPreference = $false
-    $registryPath = $Path -replace '^Registry::', '' -replace '^HKCU:\\', 'HKCU\' -replace '^HKLM:\\', 'HKLM\'
-    $output = & reg.exe add $registryPath /v $Name /t REG_DWORD /d $Value /f 2>&1
-    if ($LASTEXITCODE -ne 0) {
-        Write-Warn "Could not set '$registryPath\$Name'; continuing. $($output -join ' ')"
+function Set-SetupRegistryValue([string]$Path, [string]$Name, $Value, [Microsoft.Win32.RegistryValueKind]$Type = "DWord") {
+    Invoke-SetupStep "$Path\$Name" {
+        if (-not (Test-Path -LiteralPath $Path)) { New-Item -Path $Path -ErrorAction Stop | Out-Null }
+        Set-ItemProperty -LiteralPath $Path -Name $Name -Type $Type -Value $Value -ErrorAction Stop
     }
 }
 
@@ -308,15 +274,9 @@ function Set-DarkGoldAppearance {
     $accent = "$currentVersion\Explorer\Accent"
     $dwm = "HKCU:\Software\Microsoft\Windows\DWM"
     $desktop = "HKCU:\Control Panel\Desktop"
-    foreach ($key in $personalize, $accent, $dwm, $desktop) {
-        if (-not (Test-Path -LiteralPath $key -ErrorAction Stop)) {
-            New-Item -Path $key -ErrorAction Stop | Out-Null
-        }
-    }
-
-    Set-ItemProperty -LiteralPath $personalize -Name SystemUsesLightTheme -Type DWord -Value 0 -ErrorAction Stop
-    Set-ItemProperty -LiteralPath $personalize -Name AppsUseLightTheme -Type DWord -Value 0 -ErrorAction Stop
-    Set-ItemProperty -LiteralPath $desktop -Name AutoColorization -Type DWord -Value 0 -ErrorAction Stop
+    Set-SetupRegistryValue $personalize "SystemUsesLightTheme" 0
+    Set-SetupRegistryValue $personalize "AppsUseLightTheme" 0
+    Set-SetupRegistryValue $desktop "AutoColorization" 0
 
     # Explorer stores RGB0 shades (Light3..Dark3, then the legacy palette slot).
     [byte[]]$palette = @(
@@ -329,16 +289,16 @@ function Set-DarkGoldAppearance {
         0x5C, 0x21, 0x00, 0
         0x00, 0xB2, 0x94, 0
     )
-    Set-ItemProperty -LiteralPath $accent -Name AccentPalette -Type Binary -Value $palette -ErrorAction Stop
+    Set-SetupRegistryValue $accent "AccentPalette" $palette Binary
     # Accent DWORDs use AABBGGRR; DWM's ColorizationColor uses AARRGGBB.
     $gold = 0xFF00B9FF
-    Set-ItemProperty -LiteralPath $accent -Name AccentColorMenu -Type DWord -Value $gold -ErrorAction Stop
-    Set-ItemProperty -LiteralPath $accent -Name StartColorMenu -Type DWord -Value 0xFF009DE1 -ErrorAction Stop
-    Set-ItemProperty -LiteralPath $dwm -Name AccentColor -Type DWord -Value $gold -ErrorAction Stop
-    Set-ItemProperty -LiteralPath $dwm -Name ColorizationColor -Type DWord -Value 0xC4FFB900 -ErrorAction Stop
+    Set-SetupRegistryValue $accent "AccentColorMenu" $gold
+    Set-SetupRegistryValue $accent "StartColorMenu" 0xFF009DE1
+    Set-SetupRegistryValue $dwm "AccentColor" $gold
+    Set-SetupRegistryValue $dwm "ColorizationColor" 0xC4FFB900
 }
 
-function Disable-WidgetsForAllUsers([switch]$Required) {
+function Disable-WidgetsForAllUsers {
     $path = "HKLM:\SOFTWARE\Policies\Microsoft\Dsh"
     $name = "AllowNewsAndInterests"
     try {
@@ -356,10 +316,7 @@ function Disable-WidgetsForAllUsers([switch]$Required) {
             }
         }
     } catch [System.UnauthorizedAccessException], [System.Security.SecurityException] {
-        $message = "Windows denied access to '$path\$name'. Could not confirm Widgets are disabled for all users. On a managed device, ask your administrator to disable the 'Allow widgets' policy."
-        if ($Required) { throw $message }
-        Write-Warn "$message Continuing with the remaining setup steps."
-        return
+        throw "Windows denied access to '$path\$name'. Could not confirm Widgets are disabled for all users. On a managed device, ask your administrator to disable the 'Allow widgets' policy."
     }
     Write-Info "Verified '$path\$name' is REG_DWORD 0 (Widgets disabled by machine policy)."
 }
@@ -389,30 +346,9 @@ function Find-Shortcut {
     return $null
 }
 
-Install-LatestIntelligentTerminal
-
-Write-Info "Resolving shortcuts..."
-
-if (-not (Get-AppxPackage -Name "Microsoft.WindowsTerminal" -ErrorAction Stop)) {
-    throw "Windows Terminal (release) is not installed for the current user. Install it before resetting taskbar pins."
-}
-
-# Edge is typically available in ProgramData Start Menu.
-$edgeLink = Join-Path $env:ProgramData "Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk"
-if (-not (Test-Path $edgeLink)) {
-    $edgeLink = Find-Shortcut -Patterns @("Microsoft Edge.lnk", "*Edge*.lnk")
-}
-
-$vscodeLink = Find-Shortcut -Patterns @("Visual Studio Code.lnk", "VS Code.lnk", "*Code*.lnk")
-$everythingLink = Find-Shortcut -Patterns "Everything.lnk"
-if (-not $everythingLink) {
-    Install-WingetPackage -Id "voidtools.Everything"
-    $everythingLink = Find-Shortcut -Patterns "Everything.lnk"
-    if (-not $everythingLink) { throw "Everything.lnk not found in the Start Menu after installation. Check the Everything shortcut before resetting taskbar pins." }
-}
-$vsLink     = Find-Shortcut -Patterns @("Visual Studio 2026*.lnk")
-
-if (-not $vsLink) {
+function Get-VisualStudioShortcut {
+    $vsLink = Find-Shortcut -Patterns @("Visual Studio 2026*.lnk")
+    if ($vsLink) { return $vsLink }
     $vsExecutable = Join-Path $env:ProgramFiles "Microsoft Visual Studio\18\Enterprise\Common7\IDE\devenv.exe"
     if (Test-Path -LiteralPath $vsExecutable -PathType Leaf) {
         $vsPrograms = Join-Path $env:ProgramData "Microsoft\Windows\Start Menu\Programs"
@@ -424,88 +360,59 @@ if (-not $vsLink) {
         $vsShortcut.WorkingDirectory = Split-Path -Path $vsExecutable -Parent
         $vsShortcut.IconLocation = "$vsExecutable,0"
         $vsShortcut.Save()
+        return $vsLink
     }
+    throw "Visual Studio 2026 shortcut not found, and devenv.exe was not found at '$vsExecutable'."
 }
 
-if (-not $edgeLink)   { throw "Microsoft Edge shortcut not found." }
-if (-not $vscodeLink) { throw "Visual Studio Code shortcut not found." }
-if (-not $vsLink)     { throw "Visual Studio 2026 shortcut not found, and devenv.exe was not found at '$vsExecutable'. Check the installation path before resetting taskbar pins." }
+function Set-TaskbarPreferences([string]$HiveRoot) {
+    $base = "$HiveRoot\Software\Microsoft\Windows\CurrentVersion"
+    Set-SetupRegistryValue "$base\Explorer\Advanced" "TaskbarAl" 0
+    Set-SetupRegistryValue "$base\Search" "SearchboxTaskbarMode" 2
+    Set-SetupRegistryValue "$base\Search" "SearchboxTaskbarModeCache" 2
+    Set-SetupRegistryValue "$base\Explorer\Advanced" "ShowTaskViewButton" 0
+    Set-SetupRegistryValue "$base\Explorer\Advanced" "TaskbarMn" 0
+    Set-SetupRegistryValue "$base\Dsh" "IsPrelaunchEnabled" 0
+}
 
-Write-Info "Edge   : $edgeLink"
-Write-Info "VS Code: $vscodeLink"
-Write-Info "Everything: $everythingLink"
-Write-Info "VS     : $vsLink"
-
-Write-Info "Setting Dark mode and the manual Yellow gold accent (#FFB900) for the current user..."
-Set-DarkGoldAppearance
-
-# -----------------------------
-# 1) Current user taskbar look
-# -----------------------------
-Write-Info "Disabling Widgets (including taskbar weather) for all users..."
-Disable-WidgetsForAllUsers -Required:$RequireWidgetsPolicy
-
-Write-Info "Setting taskbar alignment and built-in taskbar items for current user..."
-
-# Left align
-Set-DwordValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -Value 0
-
-# Show the Search box
-Set-DwordValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Value 2
-Set-DwordValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarModeCache" -Value 2
-
-# Hide Task View / Chat
-Set-DwordValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
-Set-DwordValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0
-
-# Do not open the Widgets board on hover
-Set-DwordValue -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Dsh" -Name "IsPrelaunchEnabled" -Value 0
-
-# ---------------------------------------------------------
-# 2) Default user settings (so new users inherit the layout)
-# ---------------------------------------------------------
-Write-Info "Updating Default User hive so future profiles get the same taskbar settings..."
-
-$defaultHiveName = "HKLM\TempDefaultUser"
-$defaultNtUser   = "C:\Users\Default\NTUSER.DAT"
-
-if (Test-Path $defaultNtUser) {
-    & reg.exe load $defaultHiveName $defaultNtUser | Out-Null
-
+function Set-DefaultProfileTaskbar {
+    $hive = "VMSetupDefault_$([guid]::NewGuid().ToString('N'))"
+    $ntUser = Join-Path $env:SystemDrive "Users\Default\NTUSER.DAT"
+    & reg.exe load "HKLM\$hive" $ntUser
+    if ($LASTEXITCODE -ne 0) { throw "Could not load '$ntUser' (reg.exe exit code $LASTEXITCODE); no defaults were written." }
     try {
-        $duExplorer = "Registry::$defaultHiveName\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced"
-        $duSearch   = "Registry::$defaultHiveName\Software\Microsoft\Windows\CurrentVersion\Search"
-        $duDsh      = "Registry::$defaultHiveName\Software\Microsoft\Windows\CurrentVersion\Dsh"
-
-        Set-DwordValue -Path $duExplorer -Name "TaskbarAl" -Value 0
-        Set-DwordValue -Path $duExplorer -Name "ShowTaskViewButton" -Value 0
-        Set-DwordValue -Path $duExplorer -Name "TaskbarMn" -Value 0
-
-        Set-DwordValue -Path $duSearch -Name "SearchboxTaskbarMode" -Value 2
-        Set-DwordValue -Path $duSearch -Name "SearchboxTaskbarModeCache" -Value 2
-        Set-DwordValue -Path $duDsh -Name "IsPrelaunchEnabled" -Value 0
-    }
-    finally {
+        Set-TaskbarPreferences "HKLM:\$hive"
+    } finally {
         [GC]::Collect()
         [GC]::WaitForPendingFinalizers()
-        & reg.exe unload $defaultHiveName | Out-Null
+        & reg.exe unload "HKLM\$hive"
+        if ($LASTEXITCODE -ne 0) { throw "Could not unload 'HKLM\$hive' (reg.exe exit code $LASTEXITCODE)." }
     }
 }
-else {
-    Write-Warn "Default user hive not found at $defaultNtUser. Skipping new-user registry defaults."
-}
 
-# -----------------------------------
-# 3) Build LayoutModification XML file
-# -----------------------------------
-Write-Info "Generating LayoutModification.xml..."
+function New-TaskbarLayout([string]$VsLink) {
+    foreach ($name in "Microsoft.IntelligentTerminal", "Microsoft.WindowsTerminal") {
+        if (-not (Get-AppxPackage -Name $name -ErrorAction Stop)) {
+            throw "$name is not registered for the current user; keeping existing pins."
+        }
+    }
+    $edgeLink = Join-Path $env:ProgramData "Microsoft\Windows\Start Menu\Programs\Microsoft Edge.lnk"
+    if (-not (Test-Path -LiteralPath $edgeLink -PathType Leaf)) {
+        $edgeLink = Find-Shortcut -Patterns @("Microsoft Edge.lnk", "*Edge*.lnk")
+    }
+    $vscodeLink = Find-Shortcut -Patterns @("Visual Studio Code.lnk", "VS Code.lnk", "*Code*.lnk")
+    $everythingLink = Find-Shortcut -Patterns "Everything.lnk"
+    if (-not $edgeLink)       { throw "Microsoft Edge shortcut not found; keeping existing pins." }
+    if (-not $vscodeLink)     { throw "Visual Studio Code shortcut not found; keeping existing pins." }
+    if (-not $everythingLink) { throw "Everything.lnk not found; keeping existing pins." }
+    if (-not $vsLink)         { throw "Visual Studio shortcut unavailable; keeping existing pins." }
 
-$edgeEsc   = Escape-XmlAttr $edgeLink
-$vscodeEsc = Escape-XmlAttr $vscodeLink
-$everythingEsc = Escape-XmlAttr $everythingLink
-$vsEsc     = Escape-XmlAttr $vsLink
+    $edgeEsc = Escape-XmlAttr $edgeLink
+    $vscodeEsc = Escape-XmlAttr $vscodeLink
+    $everythingEsc = Escape-XmlAttr $everythingLink
+    $vsEsc = Escape-XmlAttr $vsLink
 
-$xml = @"
+    return @"
 <?xml version="1.0" encoding="utf-8"?>
 <LayoutModificationTemplate
     xmlns="http://schemas.microsoft.com/Start/2014/LayoutModification"
@@ -528,84 +435,146 @@ $xml = @"
   </CustomTaskbarLayoutCollection>
 </LayoutModificationTemplate>
 "@
-
-# Default user layout (future profiles)
-$defaultShell = "C:\Users\Default\AppData\Local\Microsoft\Windows\Shell"
-Ensure-Dir $defaultShell
-$defaultLayoutFile = Join-Path $defaultShell "LayoutModification.xml"
-Set-Content -Path $defaultLayoutFile -Value $xml -Encoding UTF8
-
-# Current user layout locations (best effort)
-$currentShellLocal   = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Shell"
-$currentShellRoaming = Join-Path $env:APPDATA "Microsoft\Windows\Shell"
-Ensure-Dir $currentShellLocal
-Ensure-Dir $currentShellRoaming
-
-Set-Content -Path (Join-Path $currentShellLocal "LayoutModification.xml") -Value $xml -Encoding UTF8
-Set-Content -Path (Join-Path $currentShellRoaming "LayoutModification.xml") -Value $xml -Encoding UTF8
-
-Write-Info "Layout XML written to:"
-Write-Host "  $defaultLayoutFile"
-Write-Host "  $(Join-Path $currentShellLocal 'LayoutModification.xml')"
-Write-Host "  $(Join-Path $currentShellRoaming 'LayoutModification.xml')"
-
-# -----------------------------------------------------
-# 4) Current user Simplified Chinese and Microsoft Pinyin
-# -----------------------------------------------------
-Write-Info "Adding Simplified Chinese with Microsoft Pinyin for current user..."
-
-$languageList = Get-WinUserLanguageList
-$simplifiedChinese = $languageList | Where-Object { $_.LanguageTag -eq "zh-CN" } | Select-Object -First 1
-
-if (-not $simplifiedChinese) {
-    $simplifiedChinese = (New-WinUserLanguageList -Language "zh-CN")[0]
-    $languageList.Add($simplifiedChinese)
 }
 
-$microsoftPinyinTip = "0804:{FA550B04-5AD7-411F-A5AC-CA038EC515D7}{6A498709-E00B-4C45-A018-8F9E4081AE40}"
-if ($microsoftPinyinTip -notin $simplifiedChinese.InputMethodTips) {
-    $simplifiedChinese.InputMethodTips.Add($microsoftPinyinTip)
+function Write-TaskbarLayout([string]$Directory, [string]$Xml) {
+    Ensure-Dir $Directory
+    $file = Join-Path $Directory "LayoutModification.xml"
+    Set-Content -LiteralPath $file -Value $Xml -Encoding UTF8
+    Write-Info "Layout written to '$file'."
+    return $file
 }
 
-Set-WinUserLanguageList -LanguageList $languageList -Force
+function Set-PinyinLanguage {
+    $languageList = Get-WinUserLanguageList
+    $simplifiedChinese = $languageList | Where-Object { $_.LanguageTag -eq "zh-CN" } | Select-Object -First 1
 
-# ---------------------------------------------------------
-# 5) Best-effort reset of current user's pinned taskbar apps
-# ---------------------------------------------------------
-Write-Info "Resetting current user's pinned taskbar items (best effort)..."
-
-Write-Info "Applying the current user's Start Layout policy before clearing pins..."
-$layoutPolicyPath = "HKCU:\Software\Policies\Microsoft\Windows\Explorer"
-$currentLayoutFile = Join-Path $currentShellLocal "LayoutModification.xml"
-$null = [xml](Get-Content -LiteralPath $currentLayoutFile -Raw)
-if (-not (Test-Path $layoutPolicyPath)) {
-    New-Item -Path $layoutPolicyPath -Force -ErrorAction Stop | Out-Null
-}
-New-ItemProperty -Path $layoutPolicyPath -Name "StartLayoutFile" -Value $currentLayoutFile -PropertyType ExpandString -Force -ErrorAction Stop | Out-Null
-New-ItemProperty -Path $layoutPolicyPath -Name "LockedStartLayout" -Value 1 -PropertyType DWord -Force -ErrorAction Stop | Out-Null
-
-try {
-    $sessionId = (Get-Process -Id $PID).SessionId
-    $explorerProcesses = Get-Process explorer -ErrorAction SilentlyContinue | Where-Object { $_.SessionId -eq $sessionId }
-    $explorerProcesses | Stop-Process -Force -ErrorAction Stop
-    $explorerProcesses | Wait-Process -ErrorAction SilentlyContinue
-
-    $taskbandKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband"
-    if (Test-Path $taskbandKey) {
-        Remove-Item -Path $taskbandKey -Recurse -Force -ErrorAction Stop
+    if (-not $simplifiedChinese) {
+        $simplifiedChinese = (New-WinUserLanguageList -Language "zh-CN")[0]
+        $languageList.Add($simplifiedChinese)
     }
 
-    $userPinnedTaskbar = Join-Path $env:APPDATA "Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
-    if (Test-Path $userPinnedTaskbar) {
-        Get-ChildItem $userPinnedTaskbar -Force -ErrorAction Stop | Remove-Item -Force -Recurse -ErrorAction Stop
+    $microsoftPinyinTip = "0804:{FA550B04-5AD7-411F-A5AC-CA038EC515D7}{6A498709-E00B-4C45-A018-8F9E4081AE40}"
+    if ($microsoftPinyinTip -notin $simplifiedChinese.InputMethodTips) {
+        $simplifiedChinese.InputMethodTips.Add($microsoftPinyinTip)
     }
-}
-finally {
-    Write-Info "Restarting Explorer..."
-    Start-Process explorer.exe
+    Set-WinUserLanguageList -LanguageList $languageList -Force
 }
 
-Write-Host ""
-Write-Host "Done." -ForegroundColor Green
-Write-Host "Sign out and sign back in to refresh the appearance, Search box, and pins: File Explorer, Intelligent Terminal, Windows Terminal (release), Edge, VS Code, Everything, Visual Studio 2026." -ForegroundColor Green
-Write-Warn "The Start Layout policy remains enabled and may restore these pins on policy refresh. Organization policies may override it."
+function Set-StartLayoutPolicy([string]$LayoutFile) {
+    $layoutPolicyPath = "HKCU:\Software\Policies\Microsoft\Windows\Explorer"
+    $layout = [xml](Get-Content -LiteralPath $LayoutFile -Raw)
+    if ($layout.DocumentElement.LocalName -ne "LayoutModificationTemplate") { throw "Invalid taskbar layout in '$LayoutFile'." }
+    if (-not (Test-Path -LiteralPath $layoutPolicyPath)) {
+        New-Item -Path $layoutPolicyPath -ErrorAction Stop | Out-Null
+    }
+    New-ItemProperty -LiteralPath $layoutPolicyPath -Name "StartLayoutFile" -Value $LayoutFile -PropertyType ExpandString -Force -ErrorAction Stop | Out-Null
+    New-ItemProperty -LiteralPath $layoutPolicyPath -Name "LockedStartLayout" -Value 1 -PropertyType DWord -Force -ErrorAction Stop | Out-Null
+}
+
+function Reset-TaskbarPins {
+    try {
+        $sessionId = (Get-Process -Id $PID).SessionId
+        $explorerProcesses = Get-Process explorer -ErrorAction SilentlyContinue | Where-Object { $_.SessionId -eq $sessionId }
+        foreach ($process in $explorerProcesses) {
+            Stop-Process -Id $process.Id -Force -ErrorAction Stop
+            $process | Wait-Process -ErrorAction SilentlyContinue
+        }
+
+        $taskbandKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Taskband"
+        if (Test-Path $taskbandKey) { Remove-Item -LiteralPath $taskbandKey -Recurse -Force -ErrorAction Stop }
+
+        $userPinnedTaskbar = Join-Path $env:APPDATA "Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar"
+        if (Test-Path $userPinnedTaskbar) {
+            Get-ChildItem -LiteralPath $userPinnedTaskbar -Force -ErrorAction Stop | Remove-Item -Force -Recurse -ErrorAction Stop
+        }
+    } finally {
+        Invoke-SetupStep "Restart Explorer" { Start-Process explorer.exe -ErrorAction Stop }
+    }
+}
+
+function Update-TaskbarLayout {
+    $vsLink = Invoke-SetupStep "Resolve Visual Studio shortcut" { Get-VisualStudioShortcut }
+    $xml = Invoke-SetupStep "Prepare seven-pin taskbar layout" { New-TaskbarLayout $vsLink }
+    if (-not $xml) { return }
+
+    Invoke-SetupStep "Default profile layout file" {
+        Write-TaskbarLayout (Join-Path $env:SystemDrive "Users\Default\AppData\Local\Microsoft\Windows\Shell") $xml | Out-Null
+    }
+    $localFile = Invoke-SetupStep "Current user local layout file" {
+        Write-TaskbarLayout (Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Shell") $xml
+    }
+    Invoke-SetupStep "Current user roaming layout file" {
+        Write-TaskbarLayout (Join-Path $env:APPDATA "Microsoft\Windows\Shell") $xml | Out-Null
+    }
+    if (-not $localFile) {
+        Write-Warn "No new local layout file; skipping layout policy and pin reset."
+        return
+    }
+    Invoke-SetupStep "Apply Start Layout policy and reset pins" {
+        Set-StartLayoutPolicy $localFile
+        Write-Info "Start Layout policy applied; policy refresh may restore unpinned apps."
+        Reset-TaskbarPins
+    }
+}
+
+foreach ($id in "Microsoft.WindowsTerminal", "vim.vim", "Rustlang.Rustup") {
+    Invoke-SetupStep "Install $id" { Install-WingetPackage -Id $id }
+}
+$vimDirectory = Invoke-SetupStep "Locate Vim for PATH" { Find-VimDirectory }
+if ($vimDirectory) {
+    Invoke-SetupStep "Vim user PATH" {
+        $userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+        $updated = Add-PathDirectory -Path $userPath -Directory $vimDirectory
+        if ($updated -cne $userPath) { [Environment]::SetEnvironmentVariable("Path", $updated, "User") }
+    }
+    Invoke-SetupStep "Vim session PATH" {
+        $env:Path = Add-PathDirectory -Path $env:Path -Directory $vimDirectory
+    }
+}
+Invoke-SetupStep "Install Git" {
+    $git = Find-UsableGit
+    if ($git) { Write-Info "Usable Git found at $git; skipping installation." }
+    else { Install-WingetPackage -Id "Git.Git" }
+}
+Invoke-SetupStep "Git init.defaultBranch" {
+    $git = Find-UsableGit
+    if (-not $git) { throw "No usable Git installation found." }
+    & $git config --global init.defaultBranch main
+    if ($LASTEXITCODE -ne 0) { throw "git config failed (exit code $LASTEXITCODE)." }
+}
+
+foreach ($id in "OpenJS.NodeJS.LTS", "Microsoft.PowerShell") {
+    Invoke-SetupStep "Install $id" { Install-WingetPackage -Id $id }
+}
+Invoke-SetupStep "Install Microsoft.VisualStudioCode" {
+    Install-WingetPackage -Id "Microsoft.VisualStudioCode" -Override '/VERYSILENT /NORESTART /MERGETASKS="addcontextmenufiles,addcontextmenufolders,addtopath"'
+}
+Invoke-SetupStep "Install Anaconda.Miniconda3" {
+    Install-WingetPackage -Id "Anaconda.Miniconda3" -MinicondaDirectory "C:\Miniconda" -Override "/InstallationType=AllUsers /RegisterPython=1 /S /D=C:\Miniconda"
+}
+foreach ($id in "Microsoft.DotNet.SDK.9", "Microsoft.DotNet.SDK.10", "Microsoft.NuGet", "GitHub.Copilot", "Microsoft.PowerToys") {
+    Invoke-SetupStep "Install $id" { Install-WingetPackage -Id $id }
+}
+Invoke-SetupStep "Intelligent Terminal installation / latest release check" { Install-LatestIntelligentTerminal }
+Invoke-SetupStep "Install Everything" {
+    if (-not (Find-Shortcut -Patterns "Everything.lnk")) { Install-WingetPackage -Id "voidtools.Everything" }
+}
+
+Invoke-SetupStep "Dark mode and Yellow gold accent" { Set-DarkGoldAppearance }
+$widgetsVerified = Invoke-SetupStep "Disable Widgets for all users" { Disable-WidgetsForAllUsers; $true }
+Invoke-SetupStep "Current user taskbar settings" { Set-TaskbarPreferences "HKCU:" }
+Invoke-SetupStep "Default profile taskbar settings" { Set-DefaultProfileTaskbar }
+Invoke-SetupStep "Simplified Chinese and Microsoft Pinyin" { Set-PinyinLanguage }
+Invoke-SetupStep "Taskbar layout" { Update-TaskbarLayout }
+
+if ($setupFailures.Count) {
+    Write-Warn "Finished with $($setupFailures.Count) failed step(s):"
+    foreach ($failure in $setupFailures) { Write-Warn "  - $failure" }
+} else {
+    Write-Info "Done."
+}
+Write-Info "Sign out and sign back in to refresh the settings that were applied."
+if ($RequireWidgetsPolicy -and -not $widgetsVerified) {
+    throw "Other setup steps have finished, but the required Widgets policy was not verified."
+}
