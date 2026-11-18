@@ -21,6 +21,13 @@ All independent setup steps are still attempted first.
 .PARAMETER AccentColor
 Windows color preset: yellogold (default, #FFB900), green (#107C10), or plumlight (#E3008C).
 
+.PARAMETER InstallVS
+Visual Studio Enterprise editions to install by year: 2019, 2022, or 2026.
+Defaults to an empty list (no Visual Studio installation). Does not change the taskbar pin selection.
+
+.EXAMPLE
+.\new-vm-setup.ps1 -InstallVS 2019,2022,2026
+
 .NOTES
 - Failed steps are reported as warnings and summarized at the end. Dependent
     actions such as clearing pins are skipped if their prerequisites did not succeed.
@@ -32,7 +39,9 @@ Windows color preset: yellogold (default, #FFB900), green (#107C10), or plumligh
 param(
     [switch]$RequireWidgetsPolicy,
     [ValidateSet("yellogold", "green", "plumlight")]
-    [string]$AccentColor = "yellogold"
+    [string]$AccentColor = "yellogold",
+    [ValidateSet("2019", "2022", "2026")]
+    [string[]]$InstallVS = @()
 )
 
 $ErrorActionPreference = "Stop"
@@ -615,6 +624,16 @@ foreach ($id in "OpenJS.NodeJS.LTS", "Microsoft.PowerShell") {
 }
 Invoke-SetupStep "Install Microsoft.VisualStudioCode" {
     Install-WingetPackage -Id "Microsoft.VisualStudioCode" -Override '/VERYSILENT /NORESTART /MERGETASKS="addcontextmenufiles,addcontextmenufolders,addtopath"'
+}
+$vsPackageIds = @{
+    "2019" = "Microsoft.VisualStudio.2019.Enterprise"
+    "2022" = "Microsoft.VisualStudio.2022.Enterprise"
+    "2026" = "Microsoft.VisualStudio.Enterprise"
+}
+foreach ($year in ($InstallVS | Select-Object -Unique)) {
+    Invoke-SetupStep "Install Visual Studio $year Enterprise" {
+        Install-WingetPackage -Id $vsPackageIds[$year] -Override "--quiet --wait --norestart"
+    }
 }
 Invoke-SetupStep "Install Anaconda.Miniconda3" {
     Install-WingetPackage -Id "Anaconda.Miniconda3" -MinicondaDirectory "C:\Miniconda" -Override "/InstallationType=AllUsers /RegisterPython=1 /S /D=C:\Miniconda"
