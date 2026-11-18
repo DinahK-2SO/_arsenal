@@ -4,7 +4,7 @@
 Installs development tools and configures Windows 11 appearance, taskbar, and input language.
 
 .DESCRIPTION
-- Set Windows and apps to Dark mode with the manual Yellow gold accent (#FFB900) for the current user
+- Set Windows and apps to Dark mode with a manual accent for the current user
 - Align left
 - Show the Search box; hide Task View / Chat
 - Attempt to disable Widgets (including taskbar weather) for all users
@@ -17,6 +17,9 @@ Installs development tools and configures Windows 11 appearance, taskbar, and in
 Report a terminating error at the end if the Widgets policy could not be verified.
 All independent setup steps are still attempted first.
 
+.PARAMETER AccentColor
+Windows color preset: yellogold (default, #FFB900), green (#107C10), or plumlight (#E3008C).
+
 .NOTES
 - Failed steps are reported as warnings and summarized at the end. Dependent
     actions such as clearing pins are skipped if their prerequisites did not succeed.
@@ -25,7 +28,11 @@ All independent setup steps are still attempted first.
 - Sign out and sign back in to apply the layout. Policy refresh can restore pins
     that you manually unpin; organization policies may override these settings.
 #>
-param([switch]$RequireWidgetsPolicy)
+param(
+    [switch]$RequireWidgetsPolicy,
+    [ValidateSet("yellogold", "green", "plumlight")]
+    [string]$AccentColor = "yellogold"
+)
 
 $ErrorActionPreference = "Stop"
 $PSNativeCommandUseErrorActionPreference = $false
@@ -268,7 +275,19 @@ function Set-SetupRegistryValue([string]$Path, [string]$Name, $Value, [Microsoft
     }
 }
 
-function Set-DarkGoldAppearance {
+# Windows accent DWORDs use AABBGGRR, not web RGB order.
+$yellowGold = 0xFF00B9FF  # #FFB900
+$green      = 0xFF107C10  # #107C10
+$plumLight  = 0xFF8C00E3  # #E3008C
+
+# Explorer shades in BBGGRR order: Light3, Light2, Light1, accent, Dark1, Dark2, Dark3.
+$accentPresets = @{
+    "yellogold" = 0x45E8FF, 0x2AD5FF, 0x0DC2FF, $yellowGold, 0x009DE1, 0x005D9B, 0x00215C
+    "green"     = 0x81EF95, 0x32E545, 0x15A119, $green,      0x0E6D0E, 0x084B08, 0x032B03
+    "plumlight" = 0xEE94FF, 0xCB4FFF, 0xA404FF, $plumLight,  0x7B00CD, 0x530099, 0x2E0069
+}
+
+function Set-DarkAppearance([int[]]$Shades) {
     $currentVersion = "HKCU:\Software\Microsoft\Windows\CurrentVersion"
     $personalize = "$currentVersion\Themes\Personalize"
     $accent = "$currentVersion\Explorer\Accent"
@@ -278,24 +297,19 @@ function Set-DarkGoldAppearance {
     Set-SetupRegistryValue $personalize "AppsUseLightTheme" 0
     Set-SetupRegistryValue $desktop "AutoColorization" 0
 
-    # Explorer stores RGB0 shades (Light3..Dark3, then the legacy palette slot).
-    [byte[]]$palette = @(
-        0xFF, 0xE8, 0x45, 0
-        0xFF, 0xD5, 0x2A, 0
-        0xFF, 0xC2, 0x0D, 0
-        0xFF, 0xB9, 0x00, 0
-        0xE1, 0x9D, 0x00, 0
-        0x9B, 0x5D, 0x00, 0
-        0x5C, 0x21, 0x00, 0
-        0x00, 0xB2, 0x94, 0
-    )
+    # Each entry is four bytes (R, G, B, 0); keep the existing eighth legacy slot.
+    [byte[]]$palette = foreach ($shade in ($Shades + 0x94B200)) {
+        [BitConverter]::GetBytes($shade -band 0xFFFFFF)
+    }
     Set-SetupRegistryValue $accent "AccentPalette" $palette Binary
-    # Accent DWORDs use AABBGGRR; DWM's ColorizationColor uses AARRGGBB.
-    $gold = 0xFF00B9FF
-    Set-SetupRegistryValue $accent "AccentColorMenu" $gold
-    Set-SetupRegistryValue $accent "StartColorMenu" 0xFF009DE1
-    Set-SetupRegistryValue $dwm "AccentColor" $gold
-    Set-SetupRegistryValue $dwm "ColorizationColor" 0xC4FFB900
+    $selectAccentColor = $Shades[3]
+    $startColor = 0xFF000000 -bor $Shades[4]
+    # DWM ColorizationColor uses AARRGGBB; bytes 12..14 are the central accent.
+    $colorizationColor = 0xC4000000 -bor ([int]$palette[12] -shl 16) -bor ([int]$palette[13] -shl 8) -bor $palette[14]
+    Set-SetupRegistryValue $accent "AccentColorMenu" $selectAccentColor
+    Set-SetupRegistryValue $accent "StartColorMenu" $startColor
+    Set-SetupRegistryValue $dwm "AccentColor" $selectAccentColor
+    Set-SetupRegistryValue $dwm "ColorizationColor" $colorizationColor
 }
 
 function Disable-WidgetsForAllUsers {
@@ -561,7 +575,7 @@ Invoke-SetupStep "Install Everything" {
     if (-not (Find-Shortcut -Patterns "Everything.lnk")) { Install-WingetPackage -Id "voidtools.Everything" }
 }
 
-Invoke-SetupStep "Dark mode and Yellow gold accent" { Set-DarkGoldAppearance }
+Invoke-SetupStep "Dark mode and $AccentColor accent" { Set-DarkAppearance -Shades $accentPresets[$AccentColor] }
 $widgetsVerified = Invoke-SetupStep "Disable Widgets for all users" { Disable-WidgetsForAllUsers; $true }
 Invoke-SetupStep "Current user taskbar settings" { Set-TaskbarPreferences "HKCU:" }
 Invoke-SetupStep "Default profile taskbar settings" { Set-DefaultProfileTaskbar }
