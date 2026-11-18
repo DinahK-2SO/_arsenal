@@ -7,7 +7,8 @@ Installs development tools and configures the Windows 11 taskbar and input langu
 - Align left
 - Show the Search box; hide Task View / Chat
 - Attempt to disable Widgets (including taskbar weather) for all users
-- Keep only: Explorer, Windows Terminal (release), Edge, VS Code, Visual Studio 2026 (in that order)
+- Install or update Intelligent Terminal to the latest official GitHub release
+- Pin in order: File Explorer, Intelligent Terminal, Windows Terminal (release), Edge, VS Code, Everything, Visual Studio 2026
 - Remove other pinned apps (best effort for current user)
 - Add Simplified Chinese with Microsoft Pinyin for the current user
 
@@ -236,6 +237,46 @@ function Write-Info($msg) {
     Write-Host "[INFO] $msg" -ForegroundColor Cyan
 }
 
+function Install-LatestIntelligentTerminal {
+    $name = "Microsoft.IntelligentTerminal"
+    $release = Invoke-RestMethod -Uri "https://api.github.com/repos/microsoft/intelligent-terminal/releases/latest" -ErrorAction Stop
+    $bundles = @($release.assets | Where-Object { $_.name -match '^Microsoft\.IntelligentTerminal_\d+\.\d+\.\d+\.\d+_8wekyb3d8bbwe\.msixbundle$' })
+    if ($bundles.Count -ne 1) {
+        throw "Expected one official Intelligent Terminal MSIX bundle in release '$($release.tag_name)'; found $($bundles.Count)."
+    }
+    $bundle = $bundles[0]
+    $latest = [version]($bundle.name.Split('_')[1])
+    $installed = Get-AppxPackage -Name $name -ErrorAction Stop
+    if (-not $installed) {
+        # WinGet installs the architecture-appropriate framework dependencies on a fresh VM.
+        Install-WingetPackage -Id $name
+        $installed = Get-AppxPackage -Name $name -ErrorAction Stop
+    }
+    if ($installed -and [version]$installed.Version -ge $latest) {
+        Write-Info "Intelligent Terminal $($installed.Version) is installed (latest release: $latest)."
+        return
+    }
+
+    # Also handle an older installation or a WinGet catalog that trails the GitHub release.
+    Write-Info "Installing Intelligent Terminal $latest from the official release..."
+    $downloadPath = Join-Path ([IO.Path]::GetTempPath()) "$([guid]::NewGuid()).msixbundle"
+    try {
+        Invoke-WebRequest -Uri $bundle.browser_download_url -UseBasicParsing -OutFile $downloadPath -ErrorAction Stop
+        $hash = (Get-FileHash -LiteralPath $downloadPath -Algorithm SHA256 -ErrorAction Stop).Hash
+        if ("sha256:$hash" -ne $bundle.digest) {
+            throw "Intelligent Terminal download does not match the SHA-256 digest for release '$($release.tag_name)'."
+        }
+        Add-AppxPackage -Path $downloadPath -ErrorAction Stop
+    } finally {
+        if (Test-Path -LiteralPath $downloadPath) { Remove-Item -LiteralPath $downloadPath -Force }
+    }
+    $installed = Get-AppxPackage -Name $name -ErrorAction Stop
+    if (-not $installed -or [version]$installed.Version -lt $latest) {
+        throw "Intelligent Terminal $latest is not registered for the current user after installation."
+    }
+    Write-Info "Verified Intelligent Terminal $($installed.Version) for the current user."
+}
+
 function Write-Warn($msg) {
     Write-Host "[WARN] $msg" -ForegroundColor Yellow
 }
@@ -311,6 +352,8 @@ function Find-Shortcut {
     return $null
 }
 
+Install-LatestIntelligentTerminal
+
 Write-Info "Resolving shortcuts..."
 
 if (-not (Get-AppxPackage -Name "Microsoft.WindowsTerminal" -ErrorAction Stop)) {
@@ -324,6 +367,12 @@ if (-not (Test-Path $edgeLink)) {
 }
 
 $vscodeLink = Find-Shortcut -Patterns @("Visual Studio Code.lnk", "VS Code.lnk", "*Code*.lnk")
+$everythingLink = Find-Shortcut -Patterns "Everything.lnk"
+if (-not $everythingLink) {
+    Install-WingetPackage -Id "voidtools.Everything"
+    $everythingLink = Find-Shortcut -Patterns "Everything.lnk"
+    if (-not $everythingLink) { throw "Everything.lnk not found in the Start Menu after installation. Check the Everything shortcut before resetting taskbar pins." }
+}
 $vsLink     = Find-Shortcut -Patterns @("Visual Studio 2026*.lnk")
 
 if (-not $vsLink) {
@@ -347,6 +396,7 @@ if (-not $vsLink)     { throw "Visual Studio 2026 shortcut not found, and devenv
 
 Write-Info "Edge   : $edgeLink"
 Write-Info "VS Code: $vscodeLink"
+Write-Info "Everything: $everythingLink"
 Write-Info "VS     : $vsLink"
 
 # -----------------------------
@@ -412,6 +462,7 @@ Write-Info "Generating LayoutModification.xml..."
 
 $edgeEsc   = Escape-XmlAttr $edgeLink
 $vscodeEsc = Escape-XmlAttr $vscodeLink
+$everythingEsc = Escape-XmlAttr $everythingLink
 $vsEsc     = Escape-XmlAttr $vsLink
 
 $xml = @"
@@ -426,9 +477,11 @@ $xml = @"
     <defaultlayout:TaskbarLayout>
       <taskbar:TaskbarPinList>
         <taskbar:DesktopApp DesktopApplicationID="Microsoft.Windows.Explorer" />
-                <taskbar:UWA AppUserModelID="Microsoft.WindowsTerminal_8wekyb3d8bbwe!App" />
+        <taskbar:UWA AppUserModelID="Microsoft.IntelligentTerminal_8wekyb3d8bbwe!App" />
+        <taskbar:UWA AppUserModelID="Microsoft.WindowsTerminal_8wekyb3d8bbwe!App" />
         <taskbar:DesktopApp DesktopApplicationLinkPath="$edgeEsc" />
         <taskbar:DesktopApp DesktopApplicationLinkPath="$vscodeEsc" />
+        <taskbar:DesktopApp DesktopApplicationLinkPath="$everythingEsc" />
         <taskbar:DesktopApp DesktopApplicationLinkPath="$vsEsc" />
       </taskbar:TaskbarPinList>
     </defaultlayout:TaskbarLayout>
@@ -514,5 +567,5 @@ finally {
 
 Write-Host ""
 Write-Host "Done." -ForegroundColor Green
-Write-Host "Sign out and sign back in to apply: Search box, File Explorer, Windows Terminal (release), Edge, VS Code, Visual Studio 2026." -ForegroundColor Green
+Write-Host "Sign out and sign back in to apply the Search box and pins: File Explorer, Intelligent Terminal, Windows Terminal (release), Edge, VS Code, Everything, Visual Studio 2026." -ForegroundColor Green
 Write-Warn "The Start Layout policy remains enabled and may restore these pins on policy refresh. Organization policies may override it."
