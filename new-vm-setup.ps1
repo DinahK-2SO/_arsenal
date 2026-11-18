@@ -1,9 +1,10 @@
 #Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-Installs development tools and configures the Windows 11 taskbar and input language.
+Installs development tools and configures Windows 11 appearance, taskbar, and input language.
 
 .DESCRIPTION
+- Set Windows and apps to Dark mode with the manual Yellow gold accent (#FFB900) for the current user
 - Align left
 - Show the Search box; hide Task View / Chat
 - Attempt to disable Widgets (including taskbar weather) for all users
@@ -301,6 +302,42 @@ function Set-DwordValue([string]$Path, [string]$Name, [int]$Value) {
     }
 }
 
+function Set-DarkGoldAppearance {
+    $currentVersion = "HKCU:\Software\Microsoft\Windows\CurrentVersion"
+    $personalize = "$currentVersion\Themes\Personalize"
+    $accent = "$currentVersion\Explorer\Accent"
+    $dwm = "HKCU:\Software\Microsoft\Windows\DWM"
+    $desktop = "HKCU:\Control Panel\Desktop"
+    foreach ($key in $personalize, $accent, $dwm, $desktop) {
+        if (-not (Test-Path -LiteralPath $key -ErrorAction Stop)) {
+            New-Item -Path $key -ErrorAction Stop | Out-Null
+        }
+    }
+
+    Set-ItemProperty -LiteralPath $personalize -Name SystemUsesLightTheme -Type DWord -Value 0 -ErrorAction Stop
+    Set-ItemProperty -LiteralPath $personalize -Name AppsUseLightTheme -Type DWord -Value 0 -ErrorAction Stop
+    Set-ItemProperty -LiteralPath $desktop -Name AutoColorization -Type DWord -Value 0 -ErrorAction Stop
+
+    # Explorer stores RGB0 shades (Light3..Dark3, then the legacy palette slot).
+    [byte[]]$palette = @(
+        0xFF, 0xE8, 0x45, 0
+        0xFF, 0xD5, 0x2A, 0
+        0xFF, 0xC2, 0x0D, 0
+        0xFF, 0xB9, 0x00, 0
+        0xE1, 0x9D, 0x00, 0
+        0x9B, 0x5D, 0x00, 0
+        0x5C, 0x21, 0x00, 0
+        0x00, 0xB2, 0x94, 0
+    )
+    Set-ItemProperty -LiteralPath $accent -Name AccentPalette -Type Binary -Value $palette -ErrorAction Stop
+    # Accent DWORDs use AABBGGRR; DWM's ColorizationColor uses AARRGGBB.
+    $gold = 0xFF00B9FF
+    Set-ItemProperty -LiteralPath $accent -Name AccentColorMenu -Type DWord -Value $gold -ErrorAction Stop
+    Set-ItemProperty -LiteralPath $accent -Name StartColorMenu -Type DWord -Value 0xFF009DE1 -ErrorAction Stop
+    Set-ItemProperty -LiteralPath $dwm -Name AccentColor -Type DWord -Value $gold -ErrorAction Stop
+    Set-ItemProperty -LiteralPath $dwm -Name ColorizationColor -Type DWord -Value 0xC4FFB900 -ErrorAction Stop
+}
+
 function Disable-WidgetsForAllUsers([switch]$Required) {
     $path = "HKLM:\SOFTWARE\Policies\Microsoft\Dsh"
     $name = "AllowNewsAndInterests"
@@ -398,6 +435,9 @@ Write-Info "Edge   : $edgeLink"
 Write-Info "VS Code: $vscodeLink"
 Write-Info "Everything: $everythingLink"
 Write-Info "VS     : $vsLink"
+
+Write-Info "Setting Dark mode and the manual Yellow gold accent (#FFB900) for the current user..."
+Set-DarkGoldAppearance
 
 # -----------------------------
 # 1) Current user taskbar look
@@ -567,5 +607,5 @@ finally {
 
 Write-Host ""
 Write-Host "Done." -ForegroundColor Green
-Write-Host "Sign out and sign back in to apply the Search box and pins: File Explorer, Intelligent Terminal, Windows Terminal (release), Edge, VS Code, Everything, Visual Studio 2026." -ForegroundColor Green
+Write-Host "Sign out and sign back in to refresh the appearance, Search box, and pins: File Explorer, Intelligent Terminal, Windows Terminal (release), Edge, VS Code, Everything, Visual Studio 2026." -ForegroundColor Green
 Write-Warn "The Start Layout policy remains enabled and may restore these pins on policy refresh. Organization policies may override it."
