@@ -70,7 +70,80 @@ function Install-WingetPackage {
     }
 }
 
+function Find-VimDirectory {
+    $ErrorActionPreference = "Stop"
+    $installationRoots = @($env:ProgramW6432, $env:ProgramFiles, ${env:ProgramFiles(x86)})
+    if ($env:LOCALAPPDATA) {
+        $installationRoots += Join-Path $env:LOCALAPPDATA "Programs"
+    }
+
+    $candidates = @(
+        foreach ($registryPath in @(
+            "HKCU:\SOFTWARE\Vim\Gvim",
+            "HKCU:\SOFTWARE\WOW6432Node\Vim\Gvim",
+            "HKLM:\SOFTWARE\Vim\Gvim",
+            "HKLM:\SOFTWARE\WOW6432Node\Vim\Gvim"
+        )) {
+            if (Test-Path -LiteralPath $registryPath) {
+                $registeredPath = (Get-ItemProperty -LiteralPath $registryPath -ErrorAction Stop).path
+                if (-not [string]::IsNullOrWhiteSpace($registeredPath)) {
+                    Split-Path -Path ([Environment]::ExpandEnvironmentVariables($registeredPath.Trim().Trim('"'))) -Parent
+                }
+            }
+        }
+
+        foreach ($root in ($installationRoots | Where-Object { $_ } | Select-Object -Unique)) {
+            $vimRoot = Join-Path $root "Vim"
+            if (-not (Test-Path -LiteralPath $vimRoot -PathType Container)) { continue }
+            $vimRoot
+            Get-ChildItem -LiteralPath $vimRoot -Directory -Filter "vim*" -ErrorAction Stop |
+                Where-Object { $_.Name -match '^vim\d+$' } |
+                Sort-Object { [int]($_.Name.Substring(3)) } -Descending |
+                Select-Object -ExpandProperty FullName
+        }
+
+        Get-Command vim.exe -CommandType Application -All -ErrorAction SilentlyContinue |
+            ForEach-Object { Split-Path -Path $_.Source -Parent }
+    )
+
+    foreach ($candidate in ($candidates | Where-Object { $_ } | Select-Object -Unique)) {
+        if (Test-Path -LiteralPath (Join-Path $candidate "vim.exe") -PathType Leaf) {
+            return $candidate
+        }
+    }
+
+    throw "Vim installation could not be located after installing vim.vim. Check that vim.exe exists in the installation directory."
+}
+
+function Add-PathDirectory {
+    param(
+        [AllowNull()][AllowEmptyString()][string]$Path,
+        [Parameter(Mandatory=$true)][string]$Directory
+    )
+
+    $normalizedDirectory = $Directory.TrimEnd('\')
+    foreach ($entry in ($Path -split ';')) {
+        $expandedEntry = [Environment]::ExpandEnvironmentVariables($entry.Trim().Trim('"')).TrimEnd('\')
+        if ($expandedEntry -ieq $normalizedDirectory) { return $Path }
+    }
+
+    if ([string]::IsNullOrWhiteSpace($Path)) { return $Directory }
+    return "$($Path.TrimEnd(';'));$Directory"
+}
+
 Install-WingetPackage -Id "Microsoft.WindowsTerminal"
+
+Install-WingetPackage -Id "vim.vim"
+$vimDirectory = Find-VimDirectory
+
+# Persist Vim in the current user's PATH and make it available in this session.
+$userPath = [Environment]::GetEnvironmentVariable("Path", "User")
+$updatedUserPath = Add-PathDirectory -Path $userPath -Directory $vimDirectory
+if ($updatedUserPath -cne $userPath) {
+    [Environment]::SetEnvironmentVariable("Path", $updatedUserPath, "User")
+}
+$env:Path = Add-PathDirectory -Path $env:Path -Directory $vimDirectory
+Write-Host "[INFO] Vim directory '$vimDirectory' is configured in the user PATH and current session." -ForegroundColor Cyan
 
 Install-WingetPackage -Id "Rustlang.Rustup"
 
@@ -420,5 +493,4 @@ Write-Host ""
 Write-Host "Done." -ForegroundColor Green
 Write-Host "Sign out and sign back in to apply: Search box, File Explorer, Windows Terminal (release), Edge, VS Code, Visual Studio 2026." -ForegroundColor Green
 Write-Warn "The Start Layout policy remains enabled and may restore these pins on policy refresh. Organization policies may override it."
-
 
